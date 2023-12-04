@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import utils.ImportUtils;
 
@@ -40,7 +41,6 @@ public class Main {
 
         // Map for saving id (key) and the game result map (value)
         final HashMap<Integer, Map<String, Integer>> resultMap = new HashMap<>();
-
         lines.stream().forEach(line -> processGame(line, resultMap));
 
         System.out.println("ResultMap: " + resultMap);
@@ -49,13 +49,13 @@ public class Main {
         final List<Integer> validIdNumberList = calculatePart1(resultMap);
         System.out.println("ValidIdNumberList: " + validIdNumberList);
         final int result = validIdNumberList.stream().mapToInt(Integer::intValue).sum();
-        System.out.println("Part1 result: " + result);
+        System.out.println("Solution Part 1: " + result);
 
         // Part 2:
-        //        final List<Integer> productList = calculatePart2(resultMap);
-        //        System.out.println("ProductList: " + productList);
-        //        final int result2 = productList.stream().mapToInt(Integer::intValue).sum();
-        //        System.out.println("Part2 result: " + result2);
+        final List<Integer> productList = calculatePart2(resultMap);
+        System.out.println("ProductList: " + productList);
+        final int result2 = productList.stream().mapToInt(Integer::intValue).sum();
+        System.out.println("Solution Part 2: " + result2);
     }
 
     public static void processGame(
@@ -121,41 +121,22 @@ public class Main {
     }
 
     private static List<Integer> calculatePart2(final HashMap<Integer, Map<String, Integer>> resultMap) {
-        final List<Integer> productList = new ArrayList();
-
-        for (Map.Entry<Integer, Map<String, Integer>> entry : resultMap.entrySet()) {
-            final Map<String, Integer> maxColorMapOfGame = entry.getValue();
-
-            final int product = getProductOfNecessaryBalls(maxColorMapOfGame);
-            productList.add(product);
-        }
-        return productList;
+        return resultMap.values().stream()
+                .map(Main::getProductOfNecessaryBalls)
+                .toList();
     }
 
     private static int getProductOfNecessaryBalls(final Map<String, Integer> maxColorMapOfGame) {
-        int result = 1;
-        for (Map.Entry<String, Integer> entry : maxColorMapOfGame.entrySet()) {
-            int multiplicator = entry.getValue() != null
-                    ? entry.getValue()
-                    : 1;
-            result *= multiplicator;
-        }
-
-        return result;
+        return maxColorMapOfGame.values().stream()
+                .mapToInt(value -> value != null ? value : 1)
+                .reduce(1, (x, y) -> x * y);
     }
 
     private static List<Integer> calculatePart1(final HashMap<Integer, Map<String, Integer>> resultMap) {
-        final List<Integer> validIdNumberList = new ArrayList();
-
-        for (Map.Entry<Integer, Map<String, Integer>> entry : resultMap.entrySet()) {
-            final Map<String, Integer> maxColorMapOfGame = entry.getValue();
-
-            final boolean isGameValid = isGameValid(maxColorMapOfGame);
-            if (isGameValid) {
-                validIdNumberList.add(entry.getKey());
-            }
-        }
-        return validIdNumberList;
+        return resultMap.entrySet().stream()
+                .filter(entry -> isGameValid(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .toList();
     }
 
     private static boolean isGameValid(final Map<String, Integer> colorMapOfGame) {

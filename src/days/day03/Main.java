@@ -13,6 +13,7 @@ import utils.ImportUtils;
 public class Main {
 
     private static final List VALID_NUMBERS = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+    private static final String ASTERISK = "*";
 
     public static void main(String[] args) {
         //  final String filePath = System.getProperty("user.dir") + "/resources/days/day03/input_03_test_01.txt";
@@ -41,12 +42,7 @@ public class Main {
 
                         if (isValid) {
                             foundValidNumbers.add(foundNumber);
-
-                            FoundNumber foundNumberData = new FoundNumber();
-                            foundNumberData.setNumber(foundNumber);
-                            foundNumberData.setIndexStart(indexStart);
-                            foundNumberData.setIndexEnd(indexEnd);
-                            foundNumberData.setLine(lineIndex);
+                            FoundNumber foundNumberData = new FoundNumber(indexStart, indexEnd, lineIndex, foundNumber);
                             foundValidNumberDatas.add(foundNumberData);
                         }
 
@@ -191,26 +187,15 @@ public class Main {
                         final String charToAnalyze = array[i][j];
 
                       //  System.out.println("Check: " + i + " " + j + " : " + charToAnalyze);
-                        if (Objects.equals(charToAnalyze, "*")) {
+                        if (Objects.equals(charToAnalyze, ASTERISK)) {
                         //    System.out.println("Valid Asterisk: " + charToAnalyze + "(Coords: " + i + " " + j + ")");
 
                             String key = i + "-" + j;
-
-                            if (asteriskMap.containsKey(key)) {
-                                if (!asteriskMap.get(key).getFoundByNumber().contains(foundValidNumberData)) {
-                                    asteriskMap.get(key).getNumbers().add(foundValidNumberData.getNumber());
-                                    asteriskMap.get(key).getFoundByNumber().add(foundValidNumberData);
-                                }
-                            } else {
-
-                                FoundAsterisk asterisk = new FoundAsterisk();
-                                asterisk.setLine(i);
-                                asterisk.setColumn(j);
-                                asterisk.setNumbers(new ArrayList<>());
+                            asteriskMap.computeIfAbsent(key, k -> new FoundAsterisk(i, j));
+                            FoundAsterisk asterisk = asteriskMap.get(key);
+                            if (!asterisk.getFoundByNumber().contains(foundValidNumberData)) {
                                 asterisk.getNumbers().add(foundValidNumberData.getNumber());
-                                asterisk.setFoundByNumber(new HashSet<>());
                                 asterisk.getFoundByNumber().add(foundValidNumberData);
-                                asteriskMap.put(key, asterisk);
                             }
 
                         }
@@ -228,91 +213,58 @@ public class Main {
      * Contains all information about the found asterisk.
      */
     private static class FoundAsterisk {
-
         private Set<FoundNumber> foundByNumber;
-
         private int line;
-
-        int column;
-
+        private int column;
         private List<Integer> numbers;
+
+        public FoundAsterisk(int line, int column) {
+            this.line = line;
+            this.column = column;
+            this.numbers = new ArrayList<>();
+            this.foundByNumber = new HashSet<>();
+        }
 
         public Set<FoundNumber> getFoundByNumber() {
             return foundByNumber;
         }
 
-        public void setFoundByNumber(final Set<FoundNumber> foundByNumber) {
-            this.foundByNumber = foundByNumber;
-        }
-
-        public int getLine() {
-            return line;
-        }
-
-        public void setLine(final int line) {
-            this.line = line;
-        }
-
-        public int getColumn() {
-            return column;
-        }
-
-        public void setColumn(final int column) {
-            this.column = column;
-        }
-
         public List<Integer> getNumbers() {
             return numbers;
         }
-
-        public void setNumbers(final List<Integer> numbers) {
-            this.numbers = numbers;
-        }
-
     }
 
     /**
      * Contains all information about the found number.
      */
     private static class FoundNumber {
-
         private int indexStart;
         private int indexEnd;
         private int line;
         private int number;
 
-        public int getIndexStart() {
-            return indexStart;
+        public FoundNumber(int indexStart, int indexEnd, int line, int number) {
+            this.indexStart = indexStart;
+            this.indexEnd = indexEnd;
+            this.line = line;
+            this.number = number;
         }
 
-        public void setIndexStart(final int column) {
-            this.indexStart = column;
+        public int getIndexStart() {
+            return indexStart;
         }
 
         public int getIndexEnd() {
             return indexEnd;
         }
 
-        public void setIndexEnd(final int lineStart) {
-            this.indexEnd = lineStart;
-        }
-
         public int getLine() {
             return line;
-        }
-
-        public void setLine(final int lineEnd) {
-            this.line = lineEnd;
         }
 
         public int getNumber() {
             return number;
         }
-
-        public void setNumber(final int number) {
-            this.number = number;
-        }
-
     }
 
 }

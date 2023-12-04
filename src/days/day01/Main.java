@@ -1,14 +1,14 @@
 package days.day01;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import utils.ImportUtils;
 
 public class Main {
 
@@ -18,42 +18,35 @@ public class Main {
     }
 
     private static void part1() {
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day01/input_01.txt";
+        String filePath = Path.of("resources/days/day01/input_01.txt").toString();
+        List<String> input = ImportUtils.readAsList(filePath);
 
         int result = 0;
 
-        final List<BigDecimal> bdNumbers = new ArrayList<>();
+        List<BigDecimal> bdNumbers = new ArrayList<>();
+        for (String line : input) {
+            // Solution for problem 1:
+            String firstNumber = findFirstNumber(line);
+            String lastNumber = findLastNumber(line);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
+            String number = firstNumber + lastNumber;
 
-                // Solution for problem 1:
-                final String firstNumber = findFirstNumber(line);
-                final String lastNumber = findLastNumber(line);
+            // System.out.println(line + " => " + number);
 
-                final String number = firstNumber + lastNumber;
-
-                System.out.println(line + " => " + number);
-
-                bdNumbers.add(new BigDecimal(number));
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            bdNumbers.add(new BigDecimal(number));
         }
 
         String globalResult = bdNumbers.stream().reduce(BigDecimal.ZERO, BigDecimal::add).toString();
 
-        System.out.println("Our result is :" + globalResult);
+        System.out.println("Solution Part 1:" + globalResult);
     }
 
-    private static String findLastNumber(final String text) {
+    private static String findLastNumber(String text) {
         String reverseString = new StringBuilder(text).reverse().toString();
         return findFirstNumber(reverseString);
     }
 
-    private static String findFirstNumber(final String text) {
+    private static String findFirstNumber(String text) {
         for (char c : text.toCharArray()) {
             if (Character.isDigit(c)) {
                 return String.valueOf(c);
@@ -64,9 +57,7 @@ public class Main {
     }
 
     private static void part2() {
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day01/input_01.txt";
-
-        final List<BigDecimal> bdNumbers = new ArrayList<>();
+        String filePath = System.getProperty("user.dir") + "/resources/days/day01/input_01.txt";
 
         Map<String, String> pointsTable = new HashMap<>();
         pointsTable.put("1", "1");
@@ -89,45 +80,42 @@ public class Main {
         pointsTable.put("eight", "8");
         pointsTable.put("nine", "9");
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
+        List<String> input = ImportUtils.readAsList(filePath);
 
-                // Solution for problem 2:
+        List<BigDecimal> bdNumbers = new ArrayList<>();
 
-                Map<Integer, String> tmpMap = new HashMap<>();
+        for (String line : input) {
+            // Solution for problem 2:
 
-                for (String key : pointsTable.keySet()) {
-                    int index = -1;
-                    do {
-                        index += 1;
-                        index = line.indexOf(key, index);
-                        if (index != -1) {
-                            tmpMap.put(index, pointsTable.get(key));
-                        }
-                    } while (index != -1);
-                }
+            Map<Integer, String> tmpMap = new HashMap<>();
 
-                final Integer min = Collections.min(new ArrayList<>(tmpMap.keySet()));
-                final String firstNumber2 = tmpMap.get(min);
-
-                final Integer max = Collections.max(new ArrayList<>(tmpMap.keySet()));
-                final String lastNumber2 = tmpMap.get(max);
-
-                final String number = firstNumber2 + lastNumber2;
-
-                System.out.println(line + " => " + number);
-
-                bdNumbers.add(new BigDecimal(number));
-
+            for (String key : pointsTable.keySet()) {
+                int index = -1;
+                do {
+                    index += 1;
+                    index = line.indexOf(key, index);
+                    if (index != -1) {
+                        tmpMap.put(index, pointsTable.get(key));
+                    }
+                } while (index != -1);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            Integer min = Collections.min(new ArrayList<>(tmpMap.keySet()));
+            String firstNumber2 = tmpMap.get(min);
+
+            Integer max = Collections.max(new ArrayList<>(tmpMap.keySet()));
+            String lastNumber2 = tmpMap.get(max);
+
+            String number = firstNumber2 + lastNumber2;
+
+      //      System.out.println(line + " => " + number);
+
+            bdNumbers.add(new BigDecimal(number));
         }
 
         String globalResult = bdNumbers.stream().reduce(BigDecimal.ZERO, BigDecimal::add).toString();
 
-        System.out.println("Our result is :" + globalResult);
+        System.out.println("Solution Part 2:" + globalResult);
     }
 
 }

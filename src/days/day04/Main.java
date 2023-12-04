@@ -3,6 +3,7 @@ package days.day04;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import utils.ImportUtils;
 
@@ -14,80 +15,89 @@ public class Main {
 
         final List<String> inputList = ImportUtils.readAsList(filePath);
 
-        List<Card> cardList = new ArrayList<>();
+        final List<LotteryCard> lotteryCardList = processLotteryCards(inputList);
 
-        for (String line : inputList) {
+        printResults(lotteryCardList);
 
-            // Trenne nach dem ":"
-            String[] valuesSplittedAtColon = line.split(":");
-            String cardName = valuesSplittedAtColon[0].trim();
-            String cardValues = valuesSplittedAtColon[1].trim();
+    }
 
-            //            System.out.println("Card Name: " + cardName);
-            //            System.out.println("Card Values: " + cardValues);
+    private static List<LotteryCard> processLotteryCards(List<String> inputList) {
+        return inputList.stream()
+                .map(Main::processCardString)
+                .collect(Collectors.toList());
+    }
 
-            // Trenne nach dem "|"
-            String[] valuesSplittedAtPipe = cardValues.split("\\|");
-            String valuesBeforePipe = valuesSplittedAtPipe[0].trim();
-            String valuesAfterPipe = valuesSplittedAtPipe[1].trim();
+    private static LotteryCard processCardString(final String line) {
 
-            //            System.out.println("Values Before Pipe: " + valuesBeforePipe);
-            //            System.out.println("Values After Pipe: " + valuesAfterPipe);
+        // Trenne nach dem ":"
+        String[] valuesSplittedAtColon = line.split(":");
+        String cardName = valuesSplittedAtColon[0].trim();
+        String cardValues = valuesSplittedAtColon[1].trim();
 
-            // Trenne jede einzelne Nummer.
-            List<String> winningNumbers = Arrays.stream(valuesBeforePipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
-            List<String> ourNumbers = Arrays.stream(valuesAfterPipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
+        //            System.out.println("Card Name: " + cardName);
+        //            System.out.println("Card Values: " + cardValues);
 
-            //                        System.out.println("Winning Numbers: " + winningNumbers);
-            //                        System.out.println("Our Numbers: " + ourNumbers);
+        // Trenne nach dem "|"
+        String[] valuesSplittedAtPipe = cardValues.split("\\|");
+        String valuesBeforePipe = valuesSplittedAtPipe[0].trim();
+        String valuesAfterPipe = valuesSplittedAtPipe[1].trim();
 
-            int matches = 0;
-            for (String numberToCheck : ourNumbers) {
-                if (winningNumbers.contains(numberToCheck)) {
-                    matches++;
-                }
+        //            System.out.println("Values Before Pipe: " + valuesBeforePipe);
+        //            System.out.println("Values After Pipe: " + valuesAfterPipe);
+
+        // Trenne jede einzelne Nummer.
+        List<String> winningNumbers = Arrays.stream(valuesBeforePipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
+        List<String> ourNumbers = Arrays.stream(valuesAfterPipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
+
+        //                        System.out.println("Winning Numbers: " + winningNumbers);
+        //                        System.out.println("Our Numbers: " + ourNumbers);
+
+        int matches = 0;
+        for (String numberToCheck : ourNumbers) {
+            if (winningNumbers.contains(numberToCheck)) {
+                matches++;
             }
-
-            int points = matches > 0 ? (int) Math.pow(2, matches - 1) : 0;
-
-            System.out.println(cardName + ": " + matches + " matches => " + points + " points");
-
-            cardList.add(new Card(cardName, points, matches, 1));
-
         }
 
-        int allPoints = cardList.stream().map(Card::getPoints).mapToInt(Integer::intValue).sum();
+        int points = matches > 0 ? (int) Math.pow(2, matches - 1) : 0;
+
+        System.out.println(cardName + ": " + matches + " matches => " + points + " points");
+
+        return new LotteryCard(cardName, points, matches, 1);
+    }
+
+    private static void printResults(final List<LotteryCard> lotteryCardList) {
+        int allPoints = lotteryCardList.stream().map(LotteryCard::getPoints).mapToInt(Integer::intValue).sum();
         System.out.println("Part 1: In sum we received " + allPoints + " points");
 
         // Part 2
-        for (int i = 0; i < cardList.size(); i++) {
-            Card card = cardList.get(i);
-            for (int h = 0; h < card.getAmountOfCards(); h++) {
-                for (int j = 1; j <= card.getMatches(); j++) {
-                    cardList.get(i + j).increaseAmountOfCards();
+        for (int i = 0; i < lotteryCardList.size(); i++) {
+            LotteryCard lotteryCard = lotteryCardList.get(i);
+            for (int h = 0; h < lotteryCard.getAmountOfCards(); h++) {
+                for (int j = 1; j <= lotteryCard.getMatches(); j++) {
+                    lotteryCardList.get(i + j).increaseAmountOfCards();
                 }
             }
         }
 
         // Sum up all cards
         int allCards = 0;
-        for (Card card : cardList) {
-            System.out.println(card.getCardName() + ": " + card.getAmountOfCards());
-            allCards += card.getAmountOfCards();
+        for (LotteryCard lotteryCard : lotteryCardList) {
+            System.out.println(lotteryCard.getCardName() + ": " + lotteryCard.getAmountOfCards());
+            allCards += lotteryCard.getAmountOfCards();
         }
 
         System.out.println("Part 2: Our total amount of cards is: " + allCards);
-
     }
 
-    private static class Card {
+    private static class LotteryCard {
 
         int matches;
         String cardName;
         int points;
         int amountOfCards;
 
-        public Card(
+        public LotteryCard(
                 final String cardName,
                 final int points,
                 final int matches,
