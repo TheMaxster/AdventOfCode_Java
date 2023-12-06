@@ -170,9 +170,9 @@ public class Main {
     ) {
         // System.out.println("Check for number: " + foundValidNumberData.getNumber());
 
-        Integer indexStart = foundValidNumberData.getIndexStart();
-        Integer indexEnd = foundValidNumberData.getIndexEnd();
-        Integer line = foundValidNumberData.getLine();
+        Integer indexStart = foundValidNumberData.indexStart();
+        Integer indexEnd = foundValidNumberData.indexEnd();
+        Integer line = foundValidNumberData.line();
 
         List<Integer> rangeList = List.of(-1, 0, 1);
 
@@ -194,7 +194,7 @@ public class Main {
                             asteriskMap.computeIfAbsent(key, k -> new FoundAsterisk(i, j));
                             FoundAsterisk asterisk = asteriskMap.get(key);
                             if (!asterisk.getFoundByNumber().contains(foundValidNumberData)) {
-                                asterisk.getNumbers().add(foundValidNumberData.getNumber());
+                                asterisk.getNumbers().add(foundValidNumberData.number());
                                 asterisk.getFoundByNumber().add(foundValidNumberData);
                             }
 
@@ -237,34 +237,6 @@ public class Main {
     /**
      * Contains all information about the found number.
      */
-    private static class FoundNumber {
-        private int indexStart;
-        private int indexEnd;
-        private int line;
-        private int number;
-
-        public FoundNumber(int indexStart, int indexEnd, int line, int number) {
-            this.indexStart = indexStart;
-            this.indexEnd = indexEnd;
-            this.line = line;
-            this.number = number;
-        }
-
-        public int getIndexStart() {
-            return indexStart;
-        }
-
-        public int getIndexEnd() {
-            return indexEnd;
-        }
-
-        public int getLine() {
-            return line;
-        }
-
-        public int getNumber() {
-            return number;
-        }
-    }
+    public record FoundNumber(int indexStart, int indexEnd, int line, int number) {    }
 
 }

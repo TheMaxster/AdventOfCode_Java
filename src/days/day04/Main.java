@@ -10,8 +10,8 @@ import utils.ImportUtils;
 public class Main {
 
     public static void main(String[] args) {
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day04/input_04_test_01.txt";
-        //final String filePath = System.getProperty("user.dir") + "/resources/days/day04/input_04.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/days/day04/input_05_test_01.txt";
+        //final String filePath = System.getProperty("user.dir") + "/resources/days/day04/input_05.txt";
 
         final List<String> inputList = ImportUtils.readAsList(filePath);
 
