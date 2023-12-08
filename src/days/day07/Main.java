@@ -1,11 +1,12 @@
 package days.day07;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import utils.ImportUtils;
 import utils.Utils;
@@ -15,7 +16,7 @@ public class Main {
     private static final Map<String, Integer> VALUE_MAP = initializeMap();
 
     public static void main(String[] args) {
-        //final String filePath = System.getProperty("user.dir") + "/resources/days/day07/input_07_test_01.txt";
+       // final String filePath = System.getProperty("user.dir") + "/resources/days/day07/input_07_test_01.txt";
        final String filePath = System.getProperty("user.dir") + "/resources/days/day07/input_07.txt";
 
         List<String> dataList = ImportUtils.readAsList(filePath);
@@ -46,7 +47,12 @@ public class Main {
 
             List<LetterFrequency> letterFrequencies = calculateLetterFrequencies(hand);
 
-            // hand = modifyHandWithJokers(hand);
+            // Part 2: Modify the hand to use J as Joker.
+            Optional<LetterFrequency> maxLetterOpt = letterFrequencies.stream().filter(l -> !Objects.equals(l.letter(), "J")).findFirst();
+            if(maxLetterOpt.isPresent()) {
+                String modifiedHand = hand.replaceAll("J", maxLetterOpt.get().letter());
+                letterFrequencies = calculateLetterFrequencies(modifiedHand);
+            }
 
 
             if (checkFiveOfAKind(letterFrequencies)) {
@@ -87,8 +93,8 @@ public class Main {
 
         int sum = 0;
 
-        for (int i = 0; i < theBigList.size(); i++) {
-            Utils.log(theBigList.get(i).toString());
+        for (int i = theBigList.size()-1; i >= 0; i--) {
+            Utils.log(theBigList.get(i).hand() + " -> "+theBigList.get(i).bid().toString());
 
             HandBidPair pair = theBigList.get(i);
             int summand = (i + 1) * pair.bid();
@@ -100,62 +106,7 @@ public class Main {
 
     }
 
-//    private static String modifyHandWithJokers(final String hand) {
-//        String[] handArray = hand.split("");
-//        String highestCard = handArray[0];
-//        for (int i = 1; i< handArray.length; i++) {
-//            if (VALUE_MAP.get(handArray[i]) > VALUE_MAP.get(highestCard)) {
-//                highestCard = handArray[i];
-//            }
-//        }
-//
-//        return hand.replaceAll("J", highestCard);
-//    }
-
-
-    private record HandBidPair(String hand, Integer bid) {
-
-    }
-
-    private static boolean checkFiveOfAKind(List<LetterFrequency> letterFrequencies) {
-        return letterFrequencies.get(0).frequency() == 5;
-    }
-
-    private static boolean checkFourOfAKind(List<LetterFrequency> letterFrequencies) {
-        return letterFrequencies.get(0).frequency() == 4;
-    }
-
-    private static boolean checkThreeOfAKind(List<LetterFrequency> letterFrequencies) {
-        return letterFrequencies.get(0).frequency() == 3;
-    }
-
-    private static boolean checkFullHouse(List<LetterFrequency> letterFrequencies) {
-        return letterFrequencies.get(0).frequency() == 3
-                && letterFrequencies.get(1).frequency() == 2;
-    }
-
-    private static boolean checkTwoPair(List<LetterFrequency> letterFrequencies) {
-        return letterFrequencies.get(0).frequency() == 2
-                && letterFrequencies.get(1).frequency() == 2;
-    }
-
-    private static boolean checkOnePair(List<LetterFrequency> letterFrequencies) {
-        return letterFrequencies.get(0).frequency() == 2
-                && letterFrequencies.get(1).frequency() != 2;
-    }
-
-    //    private static  int getMaxFrequency(List<LetterFrequency> letterFrequencies){
-    //        int max = 0;
-    //        for (LetterFrequency letterFrequency : letterFrequencies) {
-    //            if (letterFrequency.frequency()>max){
-    //                max = letterFrequency.frequency();
-    //            }
-    //        }
-    //
-    //        return max;
-    //    }
-
-    public static List<LetterFrequency> calculateLetterFrequencies(String hand) {
+    private static List<LetterFrequency> calculateLetterFrequencies(String hand) {
 
         Map<String, Integer> frequencyMap = new HashMap<>();
         for (String s : hand.split("")) {
@@ -171,38 +122,36 @@ public class Main {
             letterFrequencies.add(new LetterFrequency(letter, frequency));
         }
 
-        Collections.sort(letterFrequencies, Comparator.comparingInt(LetterFrequency::frequency).reversed());
-
-
-        // ---------------------------------------------------------------------
-
-        String maxLetter = letterFrequencies.get(0).maxLetter();
-//        if(letterFrequencies.get(0).frequency()>1) {
-            String modifiedHand = hand.replaceAll("J", maxLetter);
-
-            Map<String, Integer> modifiedFrequencyMap = new HashMap<>();
-            for (String s : modifiedHand.split("")) {
-                modifiedFrequencyMap.put(s, modifiedFrequencyMap.getOrDefault(s, 0) + 1);
-            }
-
-            letterFrequencies = new ArrayList<>();
-
-            for (Map.Entry<String, Integer> entry : modifiedFrequencyMap.entrySet()) {
-                int frequency = entry.getValue();
-                String letter = entry.getKey();
-
-                letterFrequencies.add(new LetterFrequency(letter, frequency));
-            }
-
-            Collections.sort(letterFrequencies, Comparator.comparingInt(LetterFrequency::frequency).reversed());
-
-//        }
+        letterFrequencies.sort(Comparator.comparingInt(LetterFrequency::frequency).reversed());
 
         return letterFrequencies;
     }
 
-    private record LetterFrequency(String maxLetter, int frequency) {
+    private static boolean checkFiveOfAKind(List<LetterFrequency> letterFrequencies) {
+        return letterFrequencies.get(0).frequency() == 5;
+    }
 
+    private static boolean checkFourOfAKind(List<LetterFrequency> letterFrequencies) {
+        return letterFrequencies.get(0).frequency() == 4;
+    }
+
+    private static boolean checkFullHouse(List<LetterFrequency> letterFrequencies) {
+        return letterFrequencies.get(0).frequency() == 3
+                && letterFrequencies.get(1).frequency() == 2;
+    }
+
+    private static boolean checkThreeOfAKind(List<LetterFrequency> letterFrequencies) {
+        return letterFrequencies.get(0).frequency() == 3;
+    }
+
+    private static boolean checkTwoPair(List<LetterFrequency> letterFrequencies) {
+        return letterFrequencies.get(0).frequency() == 2
+                && letterFrequencies.get(1).frequency() == 2;
+    }
+
+    private static boolean checkOnePair(List<LetterFrequency> letterFrequencies) {
+        return letterFrequencies.get(0).frequency() == 2
+                && letterFrequencies.get(1).frequency() != 2;
     }
 
     private static Map<String, Integer> initializeMap() {
@@ -226,29 +175,38 @@ public class Main {
         return valueMap;
     }
 
-    public static class FirstCardComparator implements Comparator<HandBidPair> {
+    private record HandBidPair(String hand, Integer bid) {
+
+    }
+
+    private record LetterFrequency(String letter, int frequency) {
+
+    }
+
+    /**
+     * The comparator for the comparison of the hands.
+     */
+    private static class FirstCardComparator implements Comparator<HandBidPair> {
 
         @Override
         public int compare(
                 HandBidPair o1,
                 HandBidPair o2
         ) {
-            String[] hand1 = o1.hand().split("");
-            String[] hand2 = o2.hand().split("");
+            String[] splittedHand1 = o1.hand().split("");
+            String[] splittedHand2 = o2.hand().split("");
 
-            return compare(hand1, hand2);
-
-
+            return compare(splittedHand1, splittedHand2);
         }
 
         private static int compare(
-                final String[] hand1,
-                final String[] hand2
+                final String[] splittedHand1,
+                final String[] splittedHand2
         ) {
-            for (int i = 0; i < hand1.length; i++) {
-                if (VALUE_MAP.get(hand1[i]) > VALUE_MAP.get(hand2[i])) {
+            for (int i = 0; i < splittedHand1.length; i++) {
+                if (VALUE_MAP.get(splittedHand1[i]) > VALUE_MAP.get(splittedHand2[i])) {
                     return 1;
-                } else if (VALUE_MAP.get(hand1[i]) < VALUE_MAP.get(hand2[i])) {
+                } else if (VALUE_MAP.get(splittedHand1[i]) < VALUE_MAP.get(splittedHand2[i])) {
                     return -1;
                 }
             }
