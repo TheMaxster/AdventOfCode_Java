@@ -17,8 +17,8 @@ public class Main {
     public static void main(String[] args) {
         // final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_01.txt";
         //  final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_02.txt";
-      //   final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_03.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08.txt";
+       //  final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_03.txt";
+       final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08.txt";
 
         List<String> importList = ImportUtils.readAsList(filePath);
 
@@ -85,14 +85,14 @@ public class Main {
                 }
 
                 if (Objects.equals(nextDirection, "L")) {
-                    newNextPathKeys.addAll(startingKeys.parallelStream()
+                    newNextPathKeys.addAll(startingKeys.stream()
                             .map(navigationMap::get)
                             .map(LeftRightTuple::left)
                             .toList()
                     );
 
                 } else if (Objects.equals(nextDirection, "R")) {
-                    newNextPathKeys.addAll(startingKeys.parallelStream()
+                    newNextPathKeys.addAll(startingKeys.stream()
                             .map(navigationMap::get)
                             .map(LeftRightTuple::right)
                             .toList()
@@ -106,60 +106,62 @@ public class Main {
                     .count();
 
             startingKeys = newNextPathKeys;
+
+        //    Utils.log("Paths that end with Z: "+numberOfPaths+" "+pathsThatEndWithZ);
         } while (numberOfPaths != pathsThatEndWithZ);
 
         return steps;
     }
 
-    private static BigInteger recursiveApproachForPart2(
-            final String[] pathInstructionArray,
-            final HashMap<String, LeftRightTuple> navigationMap,
-            String[] nextPathKeys,
-            BigInteger steps
-    ) {
-
-        List<String> newNextPathKeys = new ArrayList<>();
-
-        int pathsThatEndWithZ = 0;
-
-        for (int i = 0; i < pathInstructionArray.length; i++) {
-            pathsThatEndWithZ = 0;
-            final String nextDirection = pathInstructionArray[i];
-
-            if (!newNextPathKeys.isEmpty()) {
-                nextPathKeys = newNextPathKeys.toArray(new String[0]);
-                Utils.log("New Next Path Keys: " + newNextPathKeys);
-                newNextPathKeys = new ArrayList<>();
-            }
-
-            for (final String nextPathKey : nextPathKeys) {
-
-                LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
-
-                String newNextPathKey = null;
-                if (Objects.equals(nextDirection, "L")) {
-                    newNextPathKey = currenctLocation.left();
-                } else if (Objects.equals(nextDirection, "R")) {
-                    newNextPathKey = currenctLocation.right();
-                }
-
-                newNextPathKeys.add(newNextPathKey);
-                if (newNextPathKey.endsWith("Z")) {
-                    pathsThatEndWithZ++;
-                }
-            }
-            steps = steps.add(BigInteger.ONE);
-        }
-
-        if (newNextPathKeys.size() != pathsThatEndWithZ) {
-            steps = recursiveApproachForPart2(pathInstructionArray, navigationMap, newNextPathKeys.toArray(new String[0]), steps);
-        } else {
-            // If we are here, we reached the goal.
-        }
-
-        return steps;
-
-    }
+//    private static BigInteger recursiveApproachForPart2(
+//            final String[] pathInstructionArray,
+//            final HashMap<String, LeftRightTuple> navigationMap,
+//            String[] nextPathKeys,
+//            BigInteger steps
+//    ) {
+//
+//        List<String> newNextPathKeys = new ArrayList<>();
+//
+//        int pathsThatEndWithZ = 0;
+//
+//        for (int i = 0; i < pathInstructionArray.length; i++) {
+//            pathsThatEndWithZ = 0;
+//            final String nextDirection = pathInstructionArray[i];
+//
+//            if (!newNextPathKeys.isEmpty()) {
+//                nextPathKeys = newNextPathKeys.toArray(new String[0]);
+//                Utils.log("New Next Path Keys: " + newNextPathKeys);
+//                newNextPathKeys = new ArrayList<>();
+//            }
+//
+//            for (final String nextPathKey : nextPathKeys) {
+//
+//                LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
+//
+//                String newNextPathKey = null;
+//                if (Objects.equals(nextDirection, "L")) {
+//                    newNextPathKey = currenctLocation.left();
+//                } else if (Objects.equals(nextDirection, "R")) {
+//                    newNextPathKey = currenctLocation.right();
+//                }
+//
+//                newNextPathKeys.add(newNextPathKey);
+//                if (newNextPathKey.endsWith("Z")) {
+//                    pathsThatEndWithZ++;
+//                }
+//            }
+//            steps = steps.add(BigInteger.ONE);
+//        }
+//
+//        if (newNextPathKeys.size() != pathsThatEndWithZ) {
+//            steps = recursiveApproachForPart2(pathInstructionArray, navigationMap, newNextPathKeys.toArray(new String[0]), steps);
+//        } else {
+//            // If we are here, we reached the goal.
+//        }
+//
+//        return steps;
+//
+//    }
 
     private static BigInteger recursiveApproachForPart1(
             final String[] pathInstructionArray,
