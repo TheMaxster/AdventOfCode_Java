@@ -2,7 +2,6 @@ package days.day08;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +15,9 @@ public class Main {
 
     public static void main(String[] args) {
         // final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_01.txt";
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_02.txt";
-       //  final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_03.txt";
-       final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08.txt";
+        //   final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_02.txt";
+        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_03.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08.txt";
 
         List<String> importList = ImportUtils.readAsList(filePath);
 
@@ -45,6 +44,8 @@ public class Main {
         //
         //        Utils.log("Solution Part 1: We reached ZZZ in steps: " + steps);
 
+        // ---------------------------------------------------------------------------------------------------
+
         // Part 2: Define our starting keys.
         List<String> startingKeys = new ArrayList<>();
         for (Map.Entry<String, LeftRightTuple> entry : navigationMap.entrySet()) {
@@ -53,115 +54,130 @@ public class Main {
             }
         }
 
-        //        BigInteger steps = recursiveApproachForPart2(pathInstructionArray, navigationMap, startingKeys.toArray(new String[0]),
-        //                BigInteger.ZERO);
-        BigInteger steps = iterativeApproachForPart2(pathInstructionArray, navigationMap, startingKeys);
+        // IMPORTANT: This approach is brute force, but more correct than the approach with least common multiple. The lcm approach only works with special test data.
 
-        Utils.log("Solution Part 2: We reached **Z in steps: " + steps.toString());
+        Map<String, String> newNavigationMap = createNavigationMapForFullPath(pathInstructionArray, navigationMap);
+        long multiplier = pathInstructionArray.length;
+        //        long steps = iterativeBruteForceApproachForPart2(newNavigationMap, startingKeys);
+        //        long result = steps * multiplier;
+        //        Utils.log("Solution Part 2: We reached **Z in steps: " + result);
+
+        // ---------------------------------------------------------------------------------------------------
+
+        final Map<String, Long> paths = new HashMap<>();
+
+        iterativeLeastCommonMultipleApproachForPart2(newNavigationMap, startingKeys, paths);
+
+        long result = 1;
+        for (final long val : paths.values()) {
+            result = leastCommonMultiple(result, val);
+        }
+
+        Utils.log("Solution Part 2: We reached **Z in steps: " + (result * multiplier));
 
     }
 
-    private static BigInteger iterativeApproachForPart2(
-            final String[] pathInstructionArray,
-            final HashMap<String, LeftRightTuple> navigationMap,
+    private static void iterativeLeastCommonMultipleApproachForPart2(
+            final Map<String, String> newNavigationMap,
+            List<String> startingKeys,
+            Map<String, Long> paths
+    ) {
+
+        for (int i = 0; i < startingKeys.size(); i++) {
+            paths.put(startingKeys.get(i), 0L);
+        }
+
+        for (int i = 0; i < startingKeys.size(); i++) {
+            long steps = 0L;
+
+            String startingKey = startingKeys.get(i);
+
+            String tmpNode = startingKey;
+            while (!tmpNode.endsWith("Z")) {
+                tmpNode = newNavigationMap.get(tmpNode);
+                steps++;
+            }
+
+            paths.put(startingKey, steps);
+        }
+    }
+
+    private static long leastCommonMultiple(
+            long number1,
+            long number2
+    ) {
+        long absNumber1 = Math.abs(number1);
+        long absNumber2 = Math.abs(number2);
+        long absHigherNumber = Math.max(absNumber1, absNumber2);
+        long absLowerNumber = Math.min(absNumber1, absNumber2);
+        long lcm = absHigherNumber;
+        while (lcm % absLowerNumber != 0) {
+            lcm += absHigherNumber;
+        }
+        return lcm;
+    }
+
+
+    private static long iterativeBruteForceApproachForPart2(
+            final Map<String, String> newNavigationMap,
             List<String> startingKeys
     ) {
 
-        int pathsThatEndWithZ;
-        int numberOfPaths = startingKeys.size();
+        long pathsThatEndWithZ = 0;
+        long numberOfPaths = startingKeys.size();
 
-        BigInteger steps = BigInteger.ZERO;
+        long steps = 0L;
 
-        do {
-            List<String> newNextPathKeys = new ArrayList<>();
+        List<String> newNextPathKeys;
+        while (numberOfPaths != pathsThatEndWithZ) {
 
-            for (int i = 0; i < pathInstructionArray.length; i++) {
-                final String nextDirection = pathInstructionArray[i];
+            newNextPathKeys = (startingKeys.stream()
+                    .map(newNavigationMap::get)
+                    .toList());
 
-                if (!newNextPathKeys.isEmpty()) {
-                    startingKeys = newNextPathKeys;
-                    // Utils.log("New Next Path Keys: " + newNextPathKeys);
-                    newNextPathKeys = new ArrayList<>();
-                }
+            steps += 281L;
 
-                if (Objects.equals(nextDirection, "L")) {
-                    newNextPathKeys.addAll(startingKeys.stream()
-                            .map(navigationMap::get)
-                            .map(LeftRightTuple::left)
-                            .toList()
-                    );
-
-                } else if (Objects.equals(nextDirection, "R")) {
-                    newNextPathKeys.addAll(startingKeys.stream()
-                            .map(navigationMap::get)
-                            .map(LeftRightTuple::right)
-                            .toList()
-                    );
-                }
-                steps = steps.add(BigInteger.ONE);
-            }
-
-            pathsThatEndWithZ = (int) newNextPathKeys.stream()
+            pathsThatEndWithZ = newNextPathKeys.stream()
                     .filter(newNextPathKey -> newNextPathKey.endsWith("Z"))
                     .count();
 
             startingKeys = newNextPathKeys;
 
-        //    Utils.log("Paths that end with Z: "+numberOfPaths+" "+pathsThatEndWithZ);
-        } while (numberOfPaths != pathsThatEndWithZ);
+            // Utils.log("newNextPathKeys: "+newNextPathKeys.size());
+            //Utils.log("Paths that end with Z: "+numberOfPaths+" "+pathsThatEndWithZ);
+            //  Utils.log(String.valueOf(steps * 281L));
+            Utils.log(String.valueOf(steps));
+        }
 
         return steps;
     }
 
-//    private static BigInteger recursiveApproachForPart2(
-//            final String[] pathInstructionArray,
-//            final HashMap<String, LeftRightTuple> navigationMap,
-//            String[] nextPathKeys,
-//            BigInteger steps
-//    ) {
-//
-//        List<String> newNextPathKeys = new ArrayList<>();
-//
-//        int pathsThatEndWithZ = 0;
-//
-//        for (int i = 0; i < pathInstructionArray.length; i++) {
-//            pathsThatEndWithZ = 0;
-//            final String nextDirection = pathInstructionArray[i];
-//
-//            if (!newNextPathKeys.isEmpty()) {
-//                nextPathKeys = newNextPathKeys.toArray(new String[0]);
-//                Utils.log("New Next Path Keys: " + newNextPathKeys);
-//                newNextPathKeys = new ArrayList<>();
-//            }
-//
-//            for (final String nextPathKey : nextPathKeys) {
-//
-//                LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
-//
-//                String newNextPathKey = null;
-//                if (Objects.equals(nextDirection, "L")) {
-//                    newNextPathKey = currenctLocation.left();
-//                } else if (Objects.equals(nextDirection, "R")) {
-//                    newNextPathKey = currenctLocation.right();
-//                }
-//
-//                newNextPathKeys.add(newNextPathKey);
-//                if (newNextPathKey.endsWith("Z")) {
-//                    pathsThatEndWithZ++;
-//                }
-//            }
-//            steps = steps.add(BigInteger.ONE);
-//        }
-//
-//        if (newNextPathKeys.size() != pathsThatEndWithZ) {
-//            steps = recursiveApproachForPart2(pathInstructionArray, navigationMap, newNextPathKeys.toArray(new String[0]), steps);
-//        } else {
-//            // If we are here, we reached the goal.
-//        }
-//
-//        return steps;
-//
-//    }
+    private static HashMap<String, String> createNavigationMapForFullPath(
+            final String[] pathInstructionArray,
+            final HashMap<String, LeftRightTuple> navigationMap
+    ) {
+
+        HashMap<String, String> newNavigationMap = new HashMap<>();
+        for (Map.Entry<String, LeftRightTuple> entry : navigationMap.entrySet()) {
+
+            String start = entry.getKey();
+            String nextPathKey = entry.getKey();
+
+            for (int i = 0; i < pathInstructionArray.length; i++) {
+                final String nextDirection = pathInstructionArray[i];
+
+                LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
+                if (Objects.equals(nextDirection, "L")) {
+                    nextPathKey = currenctLocation.left();
+                } else if (Objects.equals(nextDirection, "R")) {
+                    nextPathKey = currenctLocation.right();
+                }
+            }
+            newNavigationMap.put(start, nextPathKey);
+        }
+
+        return newNavigationMap;
+    }
 
     private static BigInteger recursiveApproachForPart1(
             final String[] pathInstructionArray,
