@@ -12,16 +12,16 @@ import java.util.Queue;
 import utils.ImportUtils;
 import utils.Utils;
 
-public class Main {
+public class Main_02 {
 
     public static void main(String[] args) {
         final String filePath = System.getProperty("user.dir") + "/resources/days/day12/input_12_test_01.txt";
-      //   final String filePath = System.getProperty("user.dir") + "/resources/days/day12/input_12.txt";
+       //   final String filePath = System.getProperty("user.dir") + "/resources/days/day12/input_12.txt";
 
         List<String> inputs = ImportUtils.readAsList(filePath);
 
-     //  List<SpringConfigs> springConfigs = createSpringConfigsForPart1(inputs);
-        List<SpringConfigs> springConfigs = createSpringConfigsForPart2(inputs);
+        //List<SpringConfigs> springConfigs = createSpringConfigsForPart1(inputs);
+       List<SpringConfigs> springConfigs = createSpringConfigsForPart2(inputs);
 
         List<Integer> arrangementsPerConfig = new ArrayList<>();
 
@@ -44,45 +44,56 @@ public class Main {
 
         List<String> allResults = new ArrayList<>();
         //recursiveApproach(start, depth, allResults, unknownCondition.toCharArray(),records);
-        iterativeApproach(springConfig, allResults);
+        //iterativeApproach(springConfig, allResults);
+        iterativeApproachWithFor(springConfig, allResults);
 
-        Utils.log(unknownCondition+" result "+allResults.size());
-        //            for (String allResult : allResults) {
-        //                Utils.log(allResult);
-        //            }
+        Utils.log(unknownCondition + " result " + allResults.size());
+        //        for (String allResult : allResults) {
+        //            Utils.log("R: "+allResult);
+        //        }
 
         List<String> possibleResults = new ArrayList<>();
         allResults.stream().forEach(result -> {
 
-     //       if (matchesPattern(result, unknownCondition) && checkExactAmountOfHashes(result, records)) {
+            if (matchesPattern(result, unknownCondition) && checkExactAmountOfHashes(result, records)) {
 
                 String workingString = String.valueOf(result);
 
-                for (int i = 0; i < records.size(); i++) {
-                    int record = records.get(i);
-                    boolean isLast = i == records.size() - 1;
-
-                    String stringToLookup = "#".repeat(record) + (isLast ? "" : ".");
-
-                    workingString = getSubstringAfter(workingString, stringToLookup);
-                    if (workingString == null) {
-                        break;
-                    }
-                }
-
-                // We check the rest string
-                if (workingString != null && !workingString.contains("#")) {
+                if(checkForRecords(workingString, records)){
                     possibleResults.add(result);
-                    // Utils.log(result);
                 }
 
-  //          }
+            }
         });
 
         int arrangementPerUnkownConfig = possibleResults.size();
 
         Utils.log(springConfig.unknownCondition() + " -> " + arrangementPerUnkownConfig);
         arrangementsPerConfig.add(arrangementPerUnkownConfig);
+    }
+
+    private static boolean checkForRecords(
+            String workingString,
+            final List<Integer> records
+    ) {
+        for (int i = 0; i < records.size(); i++) {
+            int record = records.get(i);
+            boolean isLast = i == records.size() - 1;
+
+            String stringToLookup = "#".repeat(record) + (isLast ? "" : ".");
+
+            workingString = getSubstringAfter(workingString, stringToLookup);
+            if (workingString == null) {
+                break;
+            }
+        }
+
+        // We check the rest string
+        if (workingString != null && !workingString.contains("#")) {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -130,97 +141,137 @@ public class Main {
         return springConfigs;
     }
 
-
-    private static void iterativeApproach(
+    private static void iterativeApproachWithFor(
             final SpringConfigs configs,
             final List<String> list
     ) {
-        char[]  unknownCondition = configs.unknownCondition().toCharArray();
+        char[] unknownCondition = configs.unknownCondition().toCharArray();
         List<Integer> records = configs.records();
+        Integer recordsSumOfHashes =  records.stream().reduce(0, Integer::sum);
 
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node("", unknownCondition.length));
+        int max = Collections.max(configs.records());
+        String maxAmountOfHashes = "#".repeat(max + 1);
 
-        while (!queue.isEmpty()) {
-            Node currentNode = queue.poll();
-            String start = currentNode.start;
-            int depth = currentNode.depth;
+        String start = "";
 
-            if (depth == 0) {
-                String startDot = start + ".";
-                if(checkMaxAmountOfDots(startDot,records, unknownCondition.length)) {
-                    list.add(start + ".");
-                }
+        List<String> tmpAssignments = new ArrayList<>();
+        List<String> tmpAssignments2;
+        tmpAssignments.add(start);
 
-                String startHash = start + "#";
-                if (checkMaxAmountOfHashes(startHash, configs)) {
-                    list.add(startHash);
-                }
+        for (int i = 0; i < unknownCondition.length; i++) {
 
-                continue;
-            }
-
-            final char currentChar = unknownCondition[unknownCondition.length - depth];
+            char currentChar = unknownCondition[i];
+            tmpAssignments2 = new ArrayList<>();
             boolean isDotOrQuestionMark = (currentChar == '.' || currentChar == '?');
             boolean isHashOrQuestionMark = (currentChar == '#' || currentChar == '?');
 
-            if (isDotOrQuestionMark) {
-                String startDot = start + ".";
-                if(checkMaxAmountOfDots(startDot,records, unknownCondition.length)) {
-                    queue.add(new Node(startDot, depth - 1));
+            for (String tmpAssignment : tmpAssignments) {
+
+                if (isDotOrQuestionMark) {
+                    String tmpAssignmentAndDot = tmpAssignment + ".";
+                    if (checkMaxAmountOfDots(tmpAssignmentAndDot, configs.amountOfHashes(), unknownCondition.length)) {
+
+                        if (checkMaxAmountOfDots(tmpAssignmentAndDot, configs.amountOfHashes(), unknownCondition.length)) {
+
+                            if(i == unknownCondition.length-1){
+                                if (matchesPattern(tmpAssignmentAndDot, configs.unknownCondition()) && checkExactAmountOfHashes(tmpAssignmentAndDot, records)) {
+                                    String workingString = String.valueOf(tmpAssignmentAndDot);
+                                    if(checkForRecords(workingString, records)){
+                                        tmpAssignments2.add(tmpAssignmentAndDot);
+                                    }
+                                }
+
+                            } else {
+                                tmpAssignments2.add(tmpAssignmentAndDot);
+                            }
+
+                        }
+
+                    }
+
+
+
+
+
                 }
-            }
-            if (isHashOrQuestionMark) {
-                String startHash = start + "#";
-                if (checkMaxAmountOfHashes(startHash, configs)) {
-                    queue.add(new Node(startHash, depth - 1));
+                if (isHashOrQuestionMark) {
+                    String tmpAssignmentAndHash = tmpAssignment+ "#";
+                    if (checkMaxAmountOfHashes(tmpAssignmentAndHash, configs, maxAmountOfHashes)) {
+
+                        if(i == unknownCondition.length-1){
+                            if (matchesPattern(tmpAssignmentAndHash, configs.unknownCondition()) && checkExactAmountOfHashes(tmpAssignmentAndHash, records)) {
+                                String workingString = String.valueOf(tmpAssignmentAndHash);
+                                if(checkForRecords(workingString, records)){
+                                    tmpAssignments2.add(tmpAssignmentAndHash);
+                                }
+                            }
+
+                        } else {
+                            tmpAssignments2.add(tmpAssignmentAndHash);
+                        }
+                    }
+
                 }
 
+
             }
+
+
+
+
+            tmpAssignments = tmpAssignments2;
+
+
         }
+
+        list.addAll(tmpAssignments);
+
+
     }
 
-    private static class Node {
+    private static class Assignment {
 
-        String start;
-        int depth;
+        int amountDots;
 
-        public Node(
-                String start,
-                int depth
+        public Assignment(
+                final String assignment,
+                final int amountHashes,
+                final int amountDots
         ) {
-            this.start = start;
-            this.depth = depth;
+            this.amountDots = amountDots;
+            this.amountHashes = amountHashes;
+            this.assignment = assignment;
         }
-    }
 
-//    private static void recursiveApproach(
-//            final String start,
-//            final int depth,
-//            final List<String> list,
-//            final char[] unknownCondition,
-//            final List<Integer> records
-//    ) {
-//        if (depth == 0) {
-//            list.add(start + ".");
-//            list.add(start + "#");
-//            return;
-//        }
-//
-//        final char currentChar = unknownCondition[unknownCondition.length - depth];
-//        boolean isDotOrQuestionMark = (currentChar == '.' || currentChar == '?');
-//        boolean isHashOrQuestionMark = (currentChar == '#' || currentChar == '?');
-//
-//        if (isDotOrQuestionMark) {
-//            recursiveApproach(start + ".", depth - 1, list, unknownCondition, records);
-//        }
-//        if (isHashOrQuestionMark) {
-//            String startHash = start + "#";
-//            if (checkMaxAmountOfHashes(startHash, records)) {
-//                recursiveApproach(startHash, depth - 1, list, unknownCondition, records);
-//            }
-//        }
-//    }
+        int amountHashes;
+        String assignment;
+
+        public int getAmountDots() {
+            return amountDots;
+        }
+
+        public void setAmountDots(final int amountDots) {
+            this.amountDots = amountDots;
+        }
+
+        public int getAmountHashes() {
+            return amountHashes;
+        }
+
+        public void setAmountHashes(final int amountHashes) {
+            this.amountHashes = amountHashes;
+        }
+
+        public String getAssignment() {
+            return assignment;
+        }
+
+        public void setAssignment(final String assignment) {
+            this.assignment = assignment;
+        }
+
+
+    }
 
     private static boolean matchesPattern(
             final String result,
@@ -241,26 +292,24 @@ public class Main {
 
     private static boolean checkMaxAmountOfHashes(
             final String result,
-            final SpringConfigs configs
+            final SpringConfigs configs,
+            String maxAmountOfHashes
     ) {
         int exactAmountOfHashes = configs.amountOfHashes();
-        int occurrencesInResult = countLetterFrequency(result).getOrDefault('#', 0);
+         int occurrencesInResult = countLetterFrequency(result).getOrDefault('#', 0);
 
-        int max = Collections.max(configs.records());
-        String moreThanMaxHashes = "#".repeat(max+1);
-
-        return (occurrencesInResult <= exactAmountOfHashes) && !result.contains(moreThanMaxHashes);
+        return (occurrencesInResult <= exactAmountOfHashes) && !result.contains(maxAmountOfHashes);
     }
 
     private static boolean checkMaxAmountOfDots(
             final String result,
-            final List<Integer> records,
+            final int amountOfHashesInRecords,
             int length
     ) {
-        int exactAmountOfDots = length- records.stream().reduce(0, Integer::sum);
-        int occurrencesInResult = countLetterFrequency(result).getOrDefault('.', 0);
+        int exactAmountOfDots = length - amountOfHashesInRecords;
+         int occurrencesInResult = countLetterFrequency(result).getOrDefault('.', 0);
 
-        return occurrencesInResult <= exactAmountOfDots+1;
+        return occurrencesInResult <= exactAmountOfDots + 1;
     }
 
     private static boolean checkExactAmountOfHashes(
@@ -299,7 +348,7 @@ public class Main {
             return mainString.substring(afterIndex);
         }
 
-        return null; // Kein Text nach dem subString
+        return ""; // Kein Text nach dem subString
     }
 
 
