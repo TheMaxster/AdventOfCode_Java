@@ -1,7 +1,8 @@
 package days.day13;
 
+import static utils.Utils.printMap;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class Main {
         List<Reflection> verticalReflections = new ArrayList<>();
 
         for (String[][] array : inputsAsArray) {
-            print(array);
+            printMap(array);
           //  ReflectionTuple tuple = calculatePart1(array, null);
             ReflectionTuple tuple = calculatePart2(array);
 
@@ -77,15 +78,7 @@ public class Main {
                 .toArray(String[][]::new);
     }
 
-    public static void print(String[][] array) {
-        for (String[] row : array) {
-            for (String element : row) {
-                System.out.print(element);
-            }
-            System.out.println(" ");
-        }
-        System.out.println(" ");
-    }
+
 
     private static ReflectionTuple calculatePart2(
             final String[][] array
@@ -96,7 +89,7 @@ public class Main {
 
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
-                String[][] deepCopy = deepCopy2Array(array);
+                String[][] deepCopy = Utils.deepCopy2Array(array);
                 if (Objects.equals(array[i][j], "#")) {
                     deepCopy[i][j] = ".";
                     ReflectionTuple tuple = calculatePart1(deepCopy, ogReflectionToAvoid);
@@ -133,7 +126,7 @@ public class Main {
 
         Reflection horizontalReflection = calculateReflections(array, reflectionToAvoid, "h");
 
-        String[][] transposedArray = transpose(array);
+        String[][] transposedArray = Utils.transpose(array);
         Reflection verticalReflection = calculateReflections(transposedArray, reflectionToAvoid, "v");
 
         //        if (horizontalReflection != null || verticalReflection != null) {
@@ -204,32 +197,6 @@ public class Main {
             }
         }
         return areEqual;
-    }
-
-    public static String[][] transpose(String[][] original) {
-        int numRows = original.length;
-        int numCols = original[0].length;
-
-        String[][] transposed = new String[numCols][numRows];
-
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numCols; j++) {
-                transposed[j][i] = original[i][j];
-            }
-        }
-
-        return transposed;
-    }
-
-    public static String[][] deepCopy2Array(String[][] original) {
-        String[][] copy = new String[original.length][];
-        for (int i = 0; i < original.length; i++) {
-            copy[i] = new String[original[i].length];
-            for (int j = 0; j < original[i].length; j++) {
-                copy[i][j] = original[i][j];
-            }
-        }
-        return copy;
     }
 
     private record ReflectionTuple(Reflection horizontalReflection, Reflection verticalReflection) {
