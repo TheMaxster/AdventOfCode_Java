@@ -100,10 +100,10 @@ public class Main {
                 } while (index != -1);
             }
 
-            Integer min = Collections.min(new ArrayList<>(tmpMap.keySet()));
+            Integer min = Collections.min(tmpMap.keySet());
             String firstNumber2 = tmpMap.get(min);
 
-            Integer max = Collections.max(new ArrayList<>(tmpMap.keySet()));
+            Integer max = Collections.max(tmpMap.keySet());
             String lastNumber2 = tmpMap.get(max);
 
             String number = firstNumber2 + lastNumber2;
