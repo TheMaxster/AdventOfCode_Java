@@ -3,10 +3,22 @@ package utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ImportUtils {
+
+
+    public static String readAsPlainString(String filePath) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(filePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static List<String> readAsList(final String filePath) {
         final List<String> linesList = new ArrayList<>();
