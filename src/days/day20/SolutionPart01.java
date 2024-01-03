@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 import utils.ImportUtils;
 import utils.Utils;
 
-public class Main_02 {
+public class SolutionPart01 {
 
     public static void main(String[] args) {
-        //final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_01.txt";
+       // final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_01.txt";
         //  final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_02.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20.txt";
+         final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20.txt";
 
         List<String> input = ImportUtils.readAsList(filePath);
 
@@ -25,15 +25,17 @@ public class Main_02 {
         for (String configString : input) {
             Module module = new Module();
             String[] split = configString.split(" -> ");
-            module.setUid(split[0].trim());
             module.setDest(Arrays.stream(split[1].split(",")).map(String::trim).toList());
 
             if (configString.startsWith("broadcaster")) {
+                module.setUid(split[0].trim());
                 module.setType(Direction.BROADCAST);
             } else if (configString.startsWith("%")) {
+                module.setUid(split[0].trim().substring(1));
                 module.setType(Direction.FLIP_FLOP);
                 module.setState(State.OFF);
             } else if (configString.startsWith("&")) {
+                module.setUid(split[0].trim().substring(1));
                 module.setType(Direction.CONJUNCTION);
                 module.setMemory(new HashMap<>());
             }
@@ -71,7 +73,7 @@ public class Main_02 {
             }
         }
 
-        record QueueElement(Module last, Pulse pulse, Module current) {
+        record QueueElement(Module lastModule, Pulse pulse, Module currentModule) {
 
         }
 
@@ -83,53 +85,53 @@ public class Main_02 {
             Utils.log("----------------------------------------------------");
 
             LinkedList<QueueElement> queue = new LinkedList<>();
-            queue.push(new QueueElement(null, null, map.get("broadcaster")));
+            queue.push(new QueueElement(null, null, checkAndGet(map, "broadcaster")));
             lowPulses++; // Pushing the button counts as a low pulse.
 
             while (!queue.isEmpty()) {
                 QueueElement currentElement = queue.poll();
-                Module current = currentElement.current();
+                Module currentModule = currentElement.currentModule();
 
-                Utils.log("send " + currentElement.pulse() + " to " + current.getUid());
+                Utils.log("send " + currentElement.pulse() + " to " + currentModule.getUid());
 
-                switch (current.getType()) {
+                switch (currentModule.getType()) {
                     case BROADCAST -> {
-                        for (String dest : current.getDest()) {
-                            queue.addLast(new QueueElement(current, Pulse.LOW, checkAndGet(map, dest)));
+                        for (String dest : currentModule.getDest()) {
+                            queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                             lowPulses++;
                         }
                     }
                     case FLIP_FLOP -> {
                         if (Pulse.LOW.equals(currentElement.pulse)) {
-                            if (State.ON.equals(current.getState())) {
-                                for (String dest : current.getDest()) {
+                            if (State.ON.equals(currentModule.getState())) {
+                                for (String dest : currentModule.getDest()) {
                                     //    Utils.log("we add ("+dest+")");
-                                    queue.addLast(new QueueElement(current, Pulse.LOW, checkAndGet(map, dest)));
+                                    queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                     lowPulses++;
                                 }
-                                current.setState(State.OFF);
-                            } else if (State.OFF.equals(current.getState())) {
-                                for (String dest : current.getDest()) {
+                                currentModule.setState(State.OFF);
+                            } else if (State.OFF.equals(currentModule.getState())) {
+                                for (String dest : currentModule.getDest()) {
                                     //  Utils.log("we add ("+dest+")");
-                                    queue.addLast(new QueueElement(current, Pulse.HIGH, checkAndGet(map, dest)));
+                                    queue.addLast(new QueueElement(currentModule, Pulse.HIGH, checkAndGet(map, dest)));
                                     highPulses++;
                                 }
-                                current.setState(State.ON);
+                                currentModule.setState(State.ON);
                             }
                         }
                     }
                     case CONJUNCTION -> {
-                        current.getMemory().put(currentElement.last().getUid(), currentElement.pulse());
+                        currentModule.getMemory().put(currentElement.lastModule().getUid(), currentElement.pulse());
 
-                        boolean remembersHighPulsesForAllInputs = !current.getMemory().containsValue(Pulse.LOW);
+                        boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
 
-                        for (String dest : current.getDest()) {
+                        for (String dest : currentModule.getDest()) {
                             // Utils.log("we add ("+dest+")");
                             if (remembersHighPulsesForAllInputs) {
-                                queue.addLast(new QueueElement(current, Pulse.LOW, checkAndGet(map, dest)));
+                                queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                 lowPulses++;
                             } else {
-                                queue.addLast(new QueueElement(current, Pulse.HIGH, checkAndGet(map, dest)));
+                                queue.addLast(new QueueElement(currentModule, Pulse.HIGH, checkAndGet(map, dest)));
                                 highPulses++;
                             }
                         }

@@ -12,7 +12,7 @@ import java.util.Set;
 import utils.ImportUtils;
 import utils.Utils;
 
-public class Main {
+public class Part1Solution {
 
     public static void main(String[] args) {
         //  final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19_test_01.txt";
