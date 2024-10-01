@@ -26,8 +26,8 @@ public class Draft_01 {
         private final int deltaY;
 
         Direction(
-                int deltaX,
-                int deltaY
+                final int deltaX,
+                final int deltaY
         ) {
             this.deltaX = deltaX;
             this.deltaY = deltaY;
@@ -63,11 +63,11 @@ public class Draft_01 {
     private static final int ROWS = 500;
     private static final int COLUMNS = 500;
 
-    public static void main(String[] args) {
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day18/input_18_test_01.txt";
-         final String filePath = System.getProperty("user.dir") + "/resources/days/day18/input_18.txt";
+    public static void main(final String[] args) {
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day18/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day18/input.txt";
 
-        List<String> stringInstructions = ImportUtils.readAsList(filePath);
+        final List<String> stringInstructions = ImportUtils.readAsList(filePath);
 
         calculatePart1(stringInstructions);
 
@@ -75,45 +75,44 @@ public class Draft_01 {
 
     }
 
-//    private static void calculatePart2(final List<String> stringInstructions) {
-//        List<Instruction> instructions = createInstructions(stringInstructions);
-//        List<Instruction> newInstruction = instructions.stream().map(Instruction::colorCode).map(color -> {
-//            int distance = Integer.parseInt(color.substring(2, 7), 16);
-//            Direction direction = DIRECTION_MAP_PART_2.get(color.substring(7, 8));
-//            Utils.log(color + " -> " + distance + " "+direction);
-//            return new Instruction(direction, distance, null);
-//        }).toList();
-//
-//
-//    }
-
+    //    private static void calculatePart2(final List<String> stringInstructions) {
+    //        List<Instruction> instructions = createInstructions(stringInstructions);
+    //        List<Instruction> newInstruction = instructions.stream().map(Instruction::colorCode).map(color -> {
+    //            int distance = Integer.parseInt(color.substring(2, 7), 16);
+    //            Direction direction = DIRECTION_MAP_PART_2.get(color.substring(7, 8));
+    //            Utils.log(color + " -> " + distance + " "+direction);
+    //            return new Instruction(direction, distance, null);
+    //        }).toList();
+    //
+    //
+    //    }
 
 
     private static void calculatePart1(final List<String> stringInstructions) {
-        List<Instruction> instructions = createInstructions(stringInstructions);
+        final List<Instruction> instructions = createInstructions(stringInstructions);
 
         final String[][] map = initializeMap();
         drawBoundaries(map, instructions);
 
-        boolean[][] visited = new boolean[ROWS][COLUMNS];
+        final boolean[][] visited = new boolean[ROWS][COLUMNS];
 
         // We will do reverse-flood-fill. We flood-fill everything outside the #-barriers.
-        int startX = 0;
-        int startY = 0;
+        final int startX = 0;
+        final int startY = 0;
 
         floodFillIterative(map, visited, startX, startY);
-        long wholeArea = ROWS * COLUMNS;
+        final long wholeArea = ROWS * COLUMNS;
 
-        long outerArea = countArea(visited);
-        long innerArea = wholeArea - outerArea;
+        final long outerArea = countArea(visited);
+        final long innerArea = wholeArea - outerArea;
 
         Utils.log("Part 1: Inner Area: " + innerArea);
     }
 
     private static List<Instruction> createInstructions(final List<String> stringInstructions) {
-        List<Instruction> instructions = new ArrayList<>();
-        for (String instruction : stringInstructions) {
-            String[] instructionArray = instruction.split(" ");
+        final List<Instruction> instructions = new ArrayList<>();
+        for (final String instruction : stringInstructions) {
+            final String[] instructionArray = instruction.split(" ");
             instructions.add(
                     new Instruction(
                             DIRECTION_MAP_PART_1.get(instructionArray[0]),
@@ -131,10 +130,10 @@ public class Draft_01 {
         Coordinates current = new Coordinates(150, 100);
         map[current.x][current.y] = "#";
 
-        for (Instruction instruction : instructions) {
+        for (final Instruction instruction : instructions) {
             for (int i = 0; i < instruction.meters(); i++) {
-                int newX = current.x + instruction.direction().deltaX;
-                int newY = current.y + instruction.direction().deltaY;
+                final int newX = current.x + instruction.direction().deltaX;
+                final int newY = current.y + instruction.direction().deltaY;
                 map[newX][newY] = "#";
                 current = new Coordinates(newX, newY);
             }
@@ -142,7 +141,7 @@ public class Draft_01 {
     }
 
     private static String[][] initializeMap() {
-        String[][] map = new String[ROWS][COLUMNS];
+        final String[][] map = new String[ROWS][COLUMNS];
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
                 map[i][j] = ".";
@@ -152,16 +151,16 @@ public class Draft_01 {
     }
 
     private static void floodFillIterative(
-            String[][] map,
-            boolean[][] visited,
-            int startX,
-            int startY
+            final String[][] map,
+            final boolean[][] visited,
+            final int startX,
+            final int startY
     ) {
-        Deque<Coordinates> stack = new ArrayDeque<>();
+        final Deque<Coordinates> stack = new ArrayDeque<>();
         stack.push(new Coordinates(startX, startY));
 
         while (!stack.isEmpty()) {
-            Coordinates p = stack.pop();
+            final Coordinates p = stack.pop();
 
             if (p.x < 0 || p.y < 0 || p.x >= ROWS || p.y >= COLUMNS || visited[p.x][p.y] || Objects.equals(map[p.x][p.y], "#")) {
                 continue;
@@ -175,7 +174,7 @@ public class Draft_01 {
         }
     }
 
-    private static long countArea(boolean[][] visited) {
+    private static long countArea(final boolean[][] visited) {
         long count = 0;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {

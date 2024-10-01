@@ -24,18 +24,18 @@ public class Main_02 {
     }
 
     /**
-     * THIS ALGORITHM DOES NOT WORK PROPERLY FOR THE FIRST EXAMPLE!
-     * Wir erhalten immer Länge 103 anstelle der richtigen Länge 102. Hier muss noch analysiert werden.
+     * THIS ALGORITHM DOES NOT WORK PROPERLY FOR THE FIRST EXAMPLE! Wir erhalten immer Länge 103 anstelle der richtigen Länge 102. Hier muss
+     * noch analysiert werden.
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         String filePath = null;
-        filePath = System.getProperty("user.dir") + "/resources/days/day17/input_17_test_01.txt";
-        // filePath = System.getProperty("user.dir") + "/resources/days/day17/input_17_test_02.txt";
-        //   filePath = System.getProperty("user.dir") + "/resources/days/day17/input_17.txt";
+        // filePath = System.getProperty("user.dir") + "/resources/year2023/day17/input_test_01.txt";
+        // filePath = System.getProperty("user.dir") + "/resources/year2023/day17/input_test_02.txt";
+        filePath = System.getProperty("user.dir") + "/resources/year2023/day17/input.txt";
 
-        String[][] map = ImportUtils.readAsArray(filePath);
+        final String[][] map = ImportUtils.readAsArray(filePath);
 
         // map[0][0]="0";
 
@@ -48,32 +48,32 @@ public class Main_02 {
     private static void calculatePart2(
             final String[][] map
     ) {
-        List<Node> shortestPath = findShortestPath(map, 4, 10);
+        final List<Node> shortestPath = findShortestPath(map, 4, 10);
 
-        String[][] mapToPrint = Utils.deepCopy2Array(map);
-        for (Node node : shortestPath) {
+        final String[][] mapToPrint = Utils.deepCopy2Array(map);
+        for (final Node node : shortestPath) {
             System.out.println("(" + node.x + ", " + node.y + ")");
             mapToPrint[node.x][node.y] = "X";
         }
 
         Utils.printMap(mapToPrint);
 
-        int sum = shortestPath.stream().mapToInt(a -> Integer.parseInt(map[a.x][a.y])).sum();
+        final int sum = shortestPath.stream().mapToInt(a -> Integer.parseInt(map[a.x][a.y])).sum();
         Utils.log("Solution Part 2: Shortest Path Length:" + sum);
     }
 
     private static void calculatePart1(final String[][] map) {
-        List<Node> shortestPath = findShortestPath(map, 0, 3);
+        final List<Node> shortestPath = findShortestPath(map, 0, 3);
 
-        String[][] mapToPrint = Utils.deepCopy2Array(map);
-        for (Node node : shortestPath) {
+        final String[][] mapToPrint = Utils.deepCopy2Array(map);
+        for (final Node node : shortestPath) {
             System.out.println("(" + node.x + ", " + node.y + ")");
             mapToPrint[node.x][node.y] = "X";
         }
 
         Utils.printMap(mapToPrint);
 
-        int sum = shortestPath.stream().mapToInt(a -> Integer.parseInt(map[a.x][a.y])).sum();
+        final int sum = shortestPath.stream().mapToInt(a -> Integer.parseInt(map[a.x][a.y])).sum();
         Utils.log("Solution Part 1: Shortest Path Length: " + sum);
     }
 
@@ -99,15 +99,15 @@ public class Main_02 {
 
 
     private static List<Node> findShortestPath(
-            String[][] grid,
-            int minSteps,
-            int maxSteps
+            final String[][] grid,
+            final int minSteps,
+            final int maxSteps
     ) {
-        int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
-        int rows = grid.length;
-        int cols = grid[0].length;
-        Node[][] nodeGrid = new Node[rows][cols];
-        Set<ReducedNode> seen = new HashSet<>();
+        final int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+        final int rows = grid.length;
+        final int cols = grid[0].length;
+        final Node[][] nodeGrid = new Node[rows][cols];
+        final Set<ReducedNode> seen = new HashSet<>();
 
         // Initialisierung der Distanzen und Knoten
         for (int i = 0; i < rows; i++) {
@@ -116,17 +116,17 @@ public class Main_02 {
             }
         }
 
-        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparing(a -> a.weight));
-        Node startNode = new Node(0, 1, 0, 0, -1, -1, null);
+        final PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparing(a -> a.weight));
+        final Node startNode = new Node(0, 1, 0, 0, -1, -1, null);
         queue.add(startNode);
         nodeGrid[0][0] = startNode;
 
-        HashMap<List<Node>, Integer> paths = new HashMap();
+        final HashMap<List<Node>, Integer> paths = new HashMap();
 
         while (!queue.isEmpty()) {
-            Node current = queue.poll();
+            final Node current = queue.poll();
 
-            ReducedNode reducedNode = new ReducedNode(current.x, current.y, current.lastDirX, current.lastDirY, current.steps);
+            final ReducedNode reducedNode = new ReducedNode(current.x, current.y, current.lastDirX, current.lastDirY, current.steps);
             if (seen.contains(reducedNode)) {
                 continue;
             }
@@ -136,29 +136,29 @@ public class Main_02 {
             if (current.x == rows - 1 && current.y == cols - 1 && current.steps >= minSteps) {
                 return reconstructPath(nodeGrid[rows - 1][cols - 1]);
 
-//                List<Node> path = reconstructPath(nodeGrid[rows - 1][cols - 1]);
+                //                List<Node> path = reconstructPath(nodeGrid[rows - 1][cols - 1]);
                 //int value = path.stream().mapToInt(a -> Integer.parseInt(grid[a.x][a.y])).sum();
-//                int value = path.get(path.size() - 1).weight();
-//                paths.put(path, value);
-//                continue;
+                //                int value = path.get(path.size() - 1).weight();
+                //                paths.put(path, value);
+                //                continue;
             }
 
-            int[][] possibleDirections;
+            final int[][] possibleDirections;
             if (current.steps > 0 && current.steps < minSteps) {
                 possibleDirections = new int[][]{{current.lastDirX, current.lastDirY}};
             } else {
                 possibleDirections = directions;
             }
 
-            for (int[] dir : possibleDirections) {
+            for (final int[] dir : possibleDirections) {
                 if (dir[0] != -current.lastDirX || dir[1] != -current.lastDirY) {
-                    int newX = current.x + dir[0];
-                    int newY = current.y + dir[1];
-                    int newSteps = (dir[0] == current.lastDirX && dir[1] == current.lastDirY) ? current.steps + 1 : 1;
+                    final int newX = current.x + dir[0];
+                    final int newY = current.y + dir[1];
+                    final int newSteps = (dir[0] == current.lastDirX && dir[1] == current.lastDirY) ? current.steps + 1 : 1;
 
                     if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && newSteps <= maxSteps) {
-                        int newWeight = current.weight + Integer.parseInt(grid[newX][newY]);
-                        Node newNode = new Node(newX, newY, newWeight, newSteps, dir[0], dir[1], current);
+                        final int newWeight = current.weight + Integer.parseInt(grid[newX][newY]);
+                        final Node newNode = new Node(newX, newY, newWeight, newSteps, dir[0], dir[1], current);
                         queue.add(newNode);
                         nodeGrid[newX][newY] = newNode;
                     }
@@ -171,8 +171,8 @@ public class Main_02 {
 
     }
 
-    private static List<Node> reconstructPath(Node target) {
-        List<Node> path = new ArrayList<>();
+    private static List<Node> reconstructPath(final Node target) {
+        final List<Node> path = new ArrayList<>();
         Node current = target;
         while (current != null) {
             path.add(current);

@@ -1,4 +1,4 @@
-package year2023.day19;
+package days.day19;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,47 +14,47 @@ import utils.Utils;
 
 public class Part1Solution {
 
-    public static void main(String[] args) {
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19.txt";
+    public static void main(final String[] args) {
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day19/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day19/input.txt";
 
-        List<String> importData = ImportUtils.readAsList(filePath);
+        final List<String> importData = ImportUtils.readAsList(filePath);
 
-        List<Part> partsList = new ArrayList<>();
-        Map<String, List<Rule>> workflows = new HashMap<>();
+        final List<Part> partsList = new ArrayList<>();
+        final Map<String, List<Rule>> workflows = new HashMap<>();
 
         boolean skipToParts = false;
-        for (String line : importData) {
+        for (final String line : importData) {
             if (line.isBlank()) {
                 skipToParts = true;
                 continue;
             }
 
             if (!skipToParts) {
-                String[] split = line.split("\\{");
-                String workflow = split[0];
-                String[] rules = split[1].substring(0, split[1].length() - 1).split(",");
+                final String[] split = line.split("\\{");
+                final String workflow = split[0];
+                final String[] rules = split[1].substring(0, split[1].length() - 1).split(",");
                 workflows.put(workflow, createRulesList(rules));
             } else {
-                String[] part = line.substring(1, line.length() - 1).split(",");
+                final String[] part = line.substring(1, line.length() - 1).split(",");
                 partsList.add(createPart(part));
             }
         }
 
-        for (Map.Entry<String, List<Rule>> entry : workflows.entrySet()) {
+        for (final Map.Entry<String, List<Rule>> entry : workflows.entrySet()) {
             Utils.log(entry.getKey() + " " + entry.getValue().toString());
         }
 
-        Set<Part> acceptedParts = new HashSet<>();
+        final Set<Part> acceptedParts = new HashSet<>();
 
-        for (Part part : partsList) {
+        for (final Part part : partsList) {
             List<Rule> rules = workflows.get("in");
 
             while (!rules.isEmpty()) {
-                for (Rule rule : rules) {
+                for (final Rule rule : rules) {
                     if (!Objects.equals(rule.letter, "else")) {
-                        int letter = getLetter(rule, part);
-                        boolean result = calculateResult(rule, letter);
+                        final int letter = getLetter(rule, part);
+                        final boolean result = calculateResult(rule, letter);
 
                         if (result) {
                             rules = getNewRules(rule, part, acceptedParts, workflows);
@@ -69,18 +69,18 @@ public class Part1Solution {
 
         }
 
-        int totalSum = acceptedParts.stream().mapToInt(Part::getPartSum).sum();
+        final int totalSum = acceptedParts.stream().mapToInt(Part::getPartSum).sum();
         Utils.log("Total sum: " + totalSum);
     }
 
     private static List<Rule> createRulesList(final String[] rules) {
-        List<Rule> rulesList = new ArrayList<>();
-        for (String rule : rules) {
+        final List<Rule> rulesList = new ArrayList<>();
+        for (final String rule : rules) {
             if (rule.contains(":")) {
-                String letter = rule.substring(0, 1);
-                String operator = rule.substring(1, 2);
-                int value = Integer.parseInt(rule.substring(2).split(":")[0]);
-                String consequence = rule.substring(2).split(":")[1];
+                final String letter = rule.substring(0, 1);
+                final String operator = rule.substring(1, 2);
+                final int value = Integer.parseInt(rule.substring(2).split(":")[0]);
+                final String consequence = rule.substring(2).split(":")[1];
                 rulesList.add(new Rule(letter, operator, value, consequence));
             } else {
                 rulesList.add(new Rule("else", null, 0, rule));
@@ -95,8 +95,8 @@ public class Part1Solution {
         int a = 0;
         int s = 0;
 
-        for (String partString : part) {
-            String[] equation = partString.split("=");
+        for (final String partString : part) {
+            final String[] equation = partString.split("=");
             switch (equation[0]) {
                 case "x" -> x = Integer.parseInt(equation[1]);
                 case "m" -> m = Integer.parseInt(equation[1]);
@@ -149,7 +149,6 @@ public class Part1Solution {
             return workflows.get(rule.consequence);
         }
     }
-
 
 
     private record Rule(String letter, String operator, int value, String consequence) {

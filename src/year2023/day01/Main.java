@@ -18,7 +18,7 @@ public class Main {
         part2();
     }
 
-    private static void part1() {
+    public static void part1() {
         final List<String> input = ImportUtils.readAsList(FILE_PATH);
 
         final int result = 0;
@@ -56,7 +56,7 @@ public class Main {
         return "0";
     }
 
-    private static void part2() {
+    public static void part2() {
 
         final Map<String, String> pointsTable = new HashMap<>();
         pointsTable.put("1", "1");

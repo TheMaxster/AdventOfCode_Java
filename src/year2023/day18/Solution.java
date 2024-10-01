@@ -32,8 +32,8 @@ public class Solution {
         private final int deltaY;
 
         Direction(
-                int deltaX,
-                int deltaY
+                final int deltaX,
+                final int deltaY
         ) {
             this.deltaX = deltaX;
             this.deltaY = deltaY;
@@ -66,18 +66,18 @@ public class Solution {
 
     }
 
-    public static void main(String[] args) {
-        //final String filePath = System.getProperty("user.dir") + "/resources/days/day18/input_18_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day18/input_18.txt";
+    public static void main(final String[] args) {
+        //final String filePath = System.getProperty("user.dir") + "/resources/year2023/day18/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day18/input.txt";
 
-        List<String> stringInstructions = ImportUtils.readAsList(filePath);
+        final List<String> stringInstructions = ImportUtils.readAsList(filePath);
 
-        List<Instruction> instructions = createInstructions(stringInstructions);
-        BigInteger resultPart1 = calculate(instructions);
+        final List<Instruction> instructions = createInstructions(stringInstructions);
+        final BigInteger resultPart1 = calculate(instructions);
         Utils.log("Result Part 1: " + resultPart1);
 
-        List<Instruction> decodedInstructions = decodeInstructions(instructions);
-        BigInteger resultPart2 = calculate(decodedInstructions);
+        final List<Instruction> decodedInstructions = decodeInstructions(instructions);
+        final BigInteger resultPart2 = calculate(decodedInstructions);
         Utils.log("Result Part 2: " + resultPart2);
 
 
@@ -85,8 +85,8 @@ public class Solution {
 
     private static List<Instruction> decodeInstructions(final List<Instruction> instructions) {
         return instructions.stream().map(Instruction::colorCode).map(color -> {
-            int distance = Integer.parseInt(color.substring(2, 7), 16);
-            Direction direction = DIRECTION_MAP_PART_2.get(color.substring(7, 8));
+            final int distance = Integer.parseInt(color.substring(2, 7), 16);
+            final Direction direction = DIRECTION_MAP_PART_2.get(color.substring(7, 8));
             // Utils.log(color + " -> " + distance + " " + direction);
             return new Instruction(direction, distance, null);
         }).toList();
@@ -101,15 +101,15 @@ public class Solution {
      */
     private static BigInteger calculate(final List<Instruction> instructions) {
 
-        List<Coordinates> polygonPoints = createPolygon(instructions);
+        final List<Coordinates> polygonPoints = createPolygon(instructions);
 
         //         Utils.log(polygons.toString());
 
-        long polygonArea = calculatePolygonArea(polygonPoints);
-        long boundaryPoints = instructions.stream().mapToLong(Instruction::meters).sum();
+        final long polygonArea = calculatePolygonArea(polygonPoints);
+        final long boundaryPoints = instructions.stream().mapToLong(Instruction::meters).sum();
 
         // We calculate the inner area with picks theorem.
-        long innerArea = polygonArea - (boundaryPoints / 2) + 1;
+        final long innerArea = polygonArea - (boundaryPoints / 2) + 1;
 
         Utils.log("boundaryPoints: " + boundaryPoints);
         Utils.log("polygonArea: " + polygonArea);
@@ -128,13 +128,13 @@ public class Solution {
      *         the points of the polygon
      * @return the area of the polygon
      */
-    private static long calculatePolygonArea(List<Coordinates> polygonPoints) {
+    private static long calculatePolygonArea(final List<Coordinates> polygonPoints) {
         long area = 0;
-        int n = polygonPoints.size();
+        final int n = polygonPoints.size();
 
         for (int i = 0; i < n; i++) {
-            Coordinates current = polygonPoints.get(i);
-            Coordinates next = polygonPoints.get((i + 1) % n); // Next point with wrap around.
+            final Coordinates current = polygonPoints.get(i);
+            final Coordinates next = polygonPoints.get((i + 1) % n); // Next point with wrap around.
 
             area += current.x * next.y - next.x * current.y;
         }
@@ -150,9 +150,9 @@ public class Solution {
      * @return a list of instructions in order of the string instructions
      */
     private static List<Instruction> createInstructions(final List<String> stringInstructions) {
-        List<Instruction> instructions = new ArrayList<>();
-        for (String instruction : stringInstructions) {
-            String[] instructionArray = instruction.split(" ");
+        final List<Instruction> instructions = new ArrayList<>();
+        for (final String instruction : stringInstructions) {
+            final String[] instructionArray = instruction.split(" ");
             instructions.add(
                     new Instruction(
                             DIRECTION_MAP_PART_1.get(instructionArray[0]),
@@ -171,13 +171,13 @@ public class Solution {
      * @return a list with the coordinations of the polygon according to the order in the instructions
      */
     private static List<Coordinates> createPolygon(final List<Instruction> instructions) {
-        List<Coordinates> polygons = new ArrayList<>();
+        final List<Coordinates> polygons = new ArrayList<>();
         Coordinates current = new Coordinates(0, 0);
         polygons.add(current);
 
-        for (Instruction instruction : instructions) {
-            long newX = current.x + instruction.meters * instruction.direction().deltaX;
-            long newY = current.y + instruction.meters * instruction.direction().deltaY;
+        for (final Instruction instruction : instructions) {
+            final long newX = current.x + instruction.meters * instruction.direction().deltaX;
+            final long newY = current.y + instruction.meters * instruction.direction().deltaY;
             polygons.add(new Coordinates(newX, newY));
             current = new Coordinates(newX, newY);
         }

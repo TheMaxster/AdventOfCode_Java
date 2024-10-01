@@ -1,4 +1,4 @@
-package days.day20;
+package year2023.day20;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,18 +14,18 @@ import utils.Utils;
 
 public class SolutionPart02 {
 
-    public static void main(String[] args) {
-        // final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_01.txt";
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_02.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20.txt";
+    public static void main(final String[] args) {
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day20/input_test_01.txt";
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day20/input_test_02.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day20/input.txt";
 
-        List<String> input = ImportUtils.readAsList(filePath);
+        final List<String> input = ImportUtils.readAsList(filePath);
 
-        List<Module> modules = new ArrayList<>();
+        final List<Module> modules = new ArrayList<>();
 
-        for (String configString : input) {
-            Module module = new Module();
-            String[] split = configString.split(" -> ");
+        for (final String configString : input) {
+            final Module module = new Module();
+            final String[] split = configString.split(" -> ");
             module.setDest(Arrays.stream(split[1].split(",")).map(String::trim).toList());
 
             if (configString.startsWith("broadcaster")) {
@@ -44,29 +44,29 @@ public class SolutionPart02 {
         }
 
         // Define the first void module.
-        Module outputModule = new Module();
+        final Module outputModule = new Module();
         outputModule.setUid("output");
         outputModule.setType(Direction.OUTPUT);
         outputModule.setDest(new ArrayList<>());
         modules.add(outputModule);
 
         // Define the second void module.
-        Module outputModule2 = new Module();
+        final Module outputModule2 = new Module();
         outputModule2.setUid("rx");
         outputModule2.setType(Direction.OUTPUT);
         outputModule2.setDest(new ArrayList<>());
         modules.add(outputModule2);
 
         // Create a model map.
-        Map<String, Module> map = modules.stream().collect(Collectors.toMap(
+        final Map<String, Module> map = modules.stream().collect(Collectors.toMap(
                 a -> a.getUid(),
                 a -> a
         ));
 
         // Update all conjunction modules.
-        for (Module module : modules) {
+        for (final Module module : modules) {
             if (module.getMemory() != null) {
-                List<String> allBefore = modules.stream()
+                final List<String> allBefore = modules.stream()
                         .filter(a -> a.getDest().contains(module.getUid()))
                         .map(Module::getUid)
                         .toList();
@@ -77,19 +77,19 @@ public class SolutionPart02 {
         long highPulses = 0;
         long lowPulses = 0;
 
-        Map<String, List<Integer>> lastIncomingWasHigh = new HashMap<>();
+        final Map<String, List<Integer>> lastIncomingWasHigh = new HashMap<>();
 
         for (int i = 1; i <= 10000; i++) {
 
             Utils.log("----------------------------------------------------");
 
-            LinkedList<QueueElement> queue = new LinkedList<>();
+            final LinkedList<QueueElement> queue = new LinkedList<>();
             queue.push(new QueueElement(null, null, checkAndGet(map, "broadcaster")));
             lowPulses++; // Pushing the button counts as a low pulse.
 
             while (!queue.isEmpty()) {
-                QueueElement currentElement = queue.poll();
-                Module currentModule = currentElement.currentModule();
+                final QueueElement currentElement = queue.poll();
+                final Module currentModule = currentElement.currentModule();
 
                 Utils.log("send " + currentElement.pulse() + " to " + currentModule.getUid());
 
@@ -97,7 +97,7 @@ public class SolutionPart02 {
 
                 switch (currentModule.getType()) {
                     case BROADCAST -> {
-                        for (String dest : currentModule.getDest()) {
+                        for (final String dest : currentModule.getDest()) {
                             queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                             lowPulses++;
                         }
@@ -105,14 +105,14 @@ public class SolutionPart02 {
                     case FLIP_FLOP -> {
                         if (Pulse.LOW.equals(currentElement.pulse)) {
                             if (State.ON.equals(currentModule.getState())) {
-                                for (String dest : currentModule.getDest()) {
+                                for (final String dest : currentModule.getDest()) {
                                     //    Utils.log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                     lowPulses++;
                                 }
                                 currentModule.setState(State.OFF);
                             } else if (State.OFF.equals(currentModule.getState())) {
-                                for (String dest : currentModule.getDest()) {
+                                for (final String dest : currentModule.getDest()) {
                                     //  Utils.log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.HIGH, checkAndGet(map, dest)));
                                     highPulses++;
@@ -124,9 +124,9 @@ public class SolutionPart02 {
                     case CONJUNCTION -> {
                         currentModule.getMemory().put(currentElement.lastModule().getUid(), currentElement.pulse());
 
-                        boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
+                        final boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
 
-                        for (String dest : currentModule.getDest()) {
+                        for (final String dest : currentModule.getDest()) {
                             // Utils.log("we add ("+dest+")");
                             if (remembersHighPulsesForAllInputs) {
                                 queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
@@ -151,7 +151,8 @@ public class SolutionPart02 {
         Utils.log("Solution for Part 1: Product: " + lowPulses * highPulses);
         Utils.log(" ");
         Utils.log("Solution for Part 2: " + lastIncomingWasHigh.toString());
-        long leastCommonMultiple = lastIncomingWasHigh.values().stream().mapToLong(list -> list.get(0)).reduce((a, b) -> a * b).orElseGet(() -> 0L);
+        final long leastCommonMultiple = lastIncomingWasHigh.values().stream().mapToLong(list -> list.get(0)).reduce((a, b) -> a * b)
+                .orElseGet(() -> 0L);
         Utils.log(
                 "Comment for Part 2: The solution has to be a least common multiple of all the first inputs from the HashSet. In our case: "
                         + leastCommonMultiple);
@@ -174,12 +175,12 @@ public class SolutionPart02 {
             final Map<String, List<Integer>> lastIncomingWasHigh,
             final int i
     ) {
-        Module currentModule = currentElement.currentModule;
+        final Module currentModule = currentElement.currentModule;
         if (Pulse.HIGH.equals(currentElement.pulse) && Objects.equals(currentModule.uid, "qb")) {
             if (lastIncomingWasHigh.containsKey(currentElement.lastModule.uid)) {
                 lastIncomingWasHigh.get(currentElement.lastModule.uid).add(i);
             } else {
-                List<Integer> count = new ArrayList<>();
+                final List<Integer> count = new ArrayList<>();
                 count.add(i);
                 lastIncomingWasHigh.put(currentElement.lastModule.uid, count);
             }

@@ -11,16 +11,16 @@ import utils.Utils;
 
 public class Main {
 
-    public static void main(String[] args) {
-        // final String filePath = System.getProperty("user.dir") + "/resources/days/day16/input_16_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day16/input_16.txt";
-        String[][] map = ImportUtils.readAsArray(filePath);
+    public static void main(final String[] args) {
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day16/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day16/input.txt";
+        final String[][] map = ImportUtils.readAsArray(filePath);
 
         // Part 1
-        Beam startBeamPart1 = new Beam(new Coordinates(0, 0), Direction.EAST);
-        Set<Coordinates> energizedTiles = processMap(startBeamPart1, map);
+        final Beam startBeamPart1 = new Beam(new Coordinates(0, 0), Direction.EAST);
+        final Set<Coordinates> energizedTiles = processMap(startBeamPart1, map);
 
-        String[][] energizedMap = generateEnergizedMap(map, energizedTiles);
+        final String[][] energizedMap = generateEnergizedMap(map, energizedTiles);
         Utils.printMap(energizedMap);
 
         Utils.log("Part 1: Total amount of energized tiles is " + energizedTiles.size());
@@ -30,9 +30,9 @@ public class Main {
 
         // Process west end of map.
         for (int i = 0; i < map.length; i++) {
-            Beam startBeamPart2 = new Beam(new Coordinates(i, 0), Direction.EAST);
+            final Beam startBeamPart2 = new Beam(new Coordinates(i, 0), Direction.EAST);
             Utils.log(startBeamPart2.toString());
-            int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
+            final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
             if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
                 maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
             }
@@ -40,9 +40,9 @@ public class Main {
 
         // Process east end of map.
         for (int i = 0; i < map.length; i++) {
-            Beam startBeamPart2 = new Beam(new Coordinates(i, map[i].length - 1), Direction.WEST);
+            final Beam startBeamPart2 = new Beam(new Coordinates(i, map[i].length - 1), Direction.WEST);
             Utils.log(startBeamPart2.toString());
-            int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
+            final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
             if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
                 maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
             }
@@ -50,9 +50,9 @@ public class Main {
 
         // Process north end of map.
         for (int i = 0; i < map[0].length; i++) {
-            Beam startBeamPart2 = new Beam(new Coordinates(0, i), Direction.SOUTH);
+            final Beam startBeamPart2 = new Beam(new Coordinates(0, i), Direction.SOUTH);
             Utils.log(startBeamPart2.toString());
-            int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
+            final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
             if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
                 maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
             }
@@ -60,9 +60,9 @@ public class Main {
 
         // Process south end of map.
         for (int i = 0; i < map[0].length; i++) {
-            Beam startBeamPart2 = new Beam(new Coordinates(map.length - 1, i), Direction.NORTH);
+            final Beam startBeamPart2 = new Beam(new Coordinates(map.length - 1, i), Direction.NORTH);
             Utils.log(startBeamPart2.toString());
-            int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
+            final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
             if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
                 maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
             }
@@ -72,21 +72,21 @@ public class Main {
     }
 
     private static Set<Coordinates> processMap(
-            Beam startBeam,
-            String[][] map
+            final Beam startBeam,
+            final String[][] map
     ) {
-        LinkedList<Beam> queue = new LinkedList<>();
+        final LinkedList<Beam> queue = new LinkedList<>();
         queue.add(startBeam);
-        Set<Beam> allBeams = new HashSet<>();
+        final Set<Beam> allBeams = new HashSet<>();
 
         while (!queue.isEmpty()) {
-            Beam beam = queue.poll();
+            final Beam beam = queue.poll();
 
             if (allBeams.add(beam)) {
-                List<Direction> nextDirection = calculateNextDirections(map, beam);
+                final List<Direction> nextDirection = calculateNextDirections(map, beam);
 
-                for (Direction direction : nextDirection) {
-                    Coordinates nextCoords = calculateNextCoords(beam.coords(), direction, map);
+                for (final Direction direction : nextDirection) {
+                    final Coordinates nextCoords = calculateNextCoords(beam.coords(), direction, map);
                     if (nextCoords != null) {
                         queue.add(new Beam(nextCoords, direction));
                     }
@@ -101,12 +101,12 @@ public class Main {
 
 
     private static List<Direction> calculateNextDirections(
-            String[][] map,
-            Beam beam
+            final String[][] map,
+            final Beam beam
     ) {
-        Coordinates coords = beam.coords();
-        Direction direction = beam.direction();
-        String currentLocation = map[coords.x()][coords.y()];
+        final Coordinates coords = beam.coords();
+        final Direction direction = beam.direction();
+        final String currentLocation = map[coords.x()][coords.y()];
 
         return switch (currentLocation) {
             case "." -> List.of(beam.direction());
@@ -123,7 +123,7 @@ public class Main {
             final String[][] map,
             final Set<Coordinates> energizedTiles
     ) {
-        String[][] deepCopy = Utils.deepCopy2Array(map);
+        final String[][] deepCopy = Utils.deepCopy2Array(map);
 
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
@@ -137,21 +137,21 @@ public class Main {
         return deepCopy;
     }
 
-    private static List<Direction> processHorizontalMirror(Direction direction) {
+    private static List<Direction> processHorizontalMirror(final Direction direction) {
         return switch (direction) {
             case NORTH, SOUTH -> List.of(Direction.EAST, Direction.WEST);
             case WEST, EAST -> List.of(direction);
         };
     }
 
-    private static List<Direction> processVerticalMirror(Direction direction) {
+    private static List<Direction> processVerticalMirror(final Direction direction) {
         return switch (direction) {
             case NORTH, SOUTH -> List.of(direction);
             case WEST, EAST -> List.of(Direction.NORTH, Direction.SOUTH);
         };
     }
 
-    private static List<Direction> processSlashMirror(Direction direction) {
+    private static List<Direction> processSlashMirror(final Direction direction) {
         return switch (direction) {
             case NORTH -> List.of(Direction.EAST);
             case SOUTH -> List.of(Direction.WEST);
@@ -161,7 +161,7 @@ public class Main {
 
     }
 
-    private static List<Direction> processBackSlashMirror(Direction direction) {
+    private static List<Direction> processBackSlashMirror(final Direction direction) {
         return switch (direction) {
             case NORTH -> List.of(Direction.WEST);
             case SOUTH -> List.of(Direction.EAST);
@@ -172,12 +172,12 @@ public class Main {
     }
 
     private static Coordinates calculateNextCoords(
-            Coordinates coords,
-            Direction direction,
-            String[][] map
+            final Coordinates coords,
+            final Direction direction,
+            final String[][] map
     ) {
-        int maxX = map.length;
-        int maxY = map[0].length;
+        final int maxX = map.length;
+        final int maxY = map[0].length;
         int nextX = coords.x();
         int nextY = coords.y();
 

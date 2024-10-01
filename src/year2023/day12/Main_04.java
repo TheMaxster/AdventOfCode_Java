@@ -16,14 +16,14 @@ public class Main_04 {
 
     }
 
-    public static void main(String[] args) {
-       // final String filePath = System.getProperty("user.dir") + "/resources/days/day12/input_12_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day12/input_12.txt";
+    public static void main(final String[] args) {
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day12/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day12/input.txt";
 
-        List<String> inputs = ImportUtils.readAsList(filePath);
+        final List<String> inputs = ImportUtils.readAsList(filePath);
 
         // int result = calculatePart1(inputs);
-        long result = calculatePart2(inputs);
+        final long result = calculatePart2(inputs);
 
         Utils.log("Total sum: " + result);
 
@@ -43,9 +43,9 @@ public class Main_04 {
             final int foldingFactor
     ) {
         long sum = 0;
-        HashMap<String, Long> cache = new HashMap<>();
-        for (String input : inputs) {
-            SpringConfig config = processInput(input, foldingFactor);
+        final HashMap<String, Long> cache = new HashMap<>();
+        for (final String input : inputs) {
+            final SpringConfig config = processInput(input, foldingFactor);
             sum += arrange(config.condition(), config.records(), -1, cache);
 
 
@@ -66,8 +66,8 @@ public class Main_04 {
                 .map(Integer::valueOf)
                 .toList();
 
-        List<Integer> extendedRecords = new ArrayList<>(records);
-        StringBuilder extendedCondition = new StringBuilder(condition);
+        final List<Integer> extendedRecords = new ArrayList<>(records);
+        final StringBuilder extendedCondition = new StringBuilder(condition);
         for (int i = 1; i < foldingFactor; i++) {
             extendedCondition.append("?").append(condition);
             extendedRecords.addAll(records);
@@ -78,12 +78,12 @@ public class Main_04 {
 
     private static long arrange(
             final String row,
-            List<Integer> groups,
+            final List<Integer> groups,
             int currentGroup,
             final HashMap<String, Long> cache
     ) {
-        String key = generateKey(row, groups, currentGroup);
-        Long m = cache.getOrDefault(key, null);
+        final String key = generateKey(row, groups, currentGroup);
+        final Long m = cache.getOrDefault(key, null);
 
         if (m != null) {
             return m;
@@ -132,7 +132,7 @@ public class Main_04 {
         return row + "->" + groups.stream().map(String::valueOf).collect(Collectors.joining(",")) + "->" + currentGroups;
     }
 
-    private static String getSubstring(String string) {
+    private static String getSubstring(final String string) {
         if (string.length() - 1 < 1) {
             return "";
         } else {

@@ -15,9 +15,9 @@ public class Main {
     private static final List VALID_NUMBERS = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
     private static final String ASTERISK = "*";
 
-    public static void main(String[] args) {
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day03/input_03_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day03/input_03.txt";
+    public static void main(final String[] args) {
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day03/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day03/input.txt";
 
         final String[][] inputArray = ImportUtils.readAsArray(filePath);
 
@@ -33,16 +33,16 @@ public class Main {
 
                     final int foundNumber = Integer.parseInt(foundNumberAsString);
 
-                    int indexStart = columnIndex;
-                    int indexEnd = indexStart + foundNumberAsString.length() - 1;
+                    final int indexStart = columnIndex;
+                    final int indexEnd = indexStart + foundNumberAsString.length() - 1;
 
                     if (!checkIfNumberHasOtherNumberNeighbours(inputArray, indexStart, indexEnd, lineIndex)) {
 
-                        boolean isValid = checkSurrounding(inputArray, indexStart, indexEnd, lineIndex);
+                        final boolean isValid = checkSurrounding(inputArray, indexStart, indexEnd, lineIndex);
 
                         if (isValid) {
                             foundValidNumbers.add(foundNumber);
-                            FoundNumber foundNumberData = new FoundNumber(indexStart, indexEnd, lineIndex, foundNumber);
+                            final FoundNumber foundNumberData = new FoundNumber(indexStart, indexEnd, lineIndex, foundNumber);
                             foundValidNumberDatas.add(foundNumberData);
                         }
 
@@ -59,15 +59,15 @@ public class Main {
         // Part 2
         final Map<String, FoundAsterisk> asteriskMap = new HashMap<>();
 
-        for (FoundNumber foundValidNumberData : foundValidNumberDatas) {
+        for (final FoundNumber foundValidNumberData : foundValidNumberDatas) {
             checkSurroundingAsterisk(inputArray, foundValidNumberData, asteriskMap);
         }
 
         final List<Integer> asteriskSummands = new ArrayList<>();
         // System.out.println("AsteriskMap:" + asteriskMap);
-        for (Map.Entry<String, FoundAsterisk> stringFoundAsteriskEntry : asteriskMap.entrySet()) {
+        for (final Map.Entry<String, FoundAsterisk> stringFoundAsteriskEntry : asteriskMap.entrySet()) {
 
-           // System.out.println("AsteriskList:" + stringFoundAsteriskEntry.getValue().getNumbers());
+            // System.out.println("AsteriskList:" + stringFoundAsteriskEntry.getValue().getNumbers());
             final List<Integer> numbers = stringFoundAsteriskEntry.getValue().getNumbers();
             if (numbers.size() == 2) {
                 asteriskSummands.add(numbers.get(0) * numbers.get(1));
@@ -87,14 +87,14 @@ public class Main {
 
     ) {
         try {
-            String potentialNumber = inputArray[lineIndex][columnIndex];
+            final String potentialNumber = inputArray[lineIndex][columnIndex];
             if (VALID_NUMBERS.contains(potentialNumber)) {
-              //  System.out.println("Found number: " + potentialNumber);
+                //  System.out.println("Found number: " + potentialNumber);
                 numberBuilder.append(inputArray[lineIndex][columnIndex]);
-                return  lookForNumber(inputArray, lineIndex, columnIndex + 1, numberBuilder);
+                return lookForNumber(inputArray, lineIndex, columnIndex + 1, numberBuilder);
             }
             return numberBuilder.toString();
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
             return numberBuilder.toString();
         }
 
@@ -113,7 +113,7 @@ public class Main {
             final Integer leftNumber = Integer.parseInt(charToAnalyze);
             return true;
 
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
             //...
         }
 
@@ -123,7 +123,7 @@ public class Main {
             final Integer rightNumber = Integer.parseInt(charToAnalyze);
             return true;
 
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+        } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
             //...
         }
 
@@ -140,20 +140,20 @@ public class Main {
         final List<Integer> rangeList = List.of(-1, 0, 1);
 
         for (int additional = 0; additional <= indexEnd - indexStart; additional++) {
-            for (Integer rangeI : rangeList) {
-                for (Integer rangeJ : rangeList) {
-                    int i = line + rangeJ;
-                    int j = indexStart + rangeI + additional;
+            for (final Integer rangeI : rangeList) {
+                for (final Integer rangeJ : rangeList) {
+                    final int i = line + rangeJ;
+                    final int j = indexStart + rangeI + additional;
 
                     try {
                         final String charToAnalyze = array[i][j];
 
                         // System.out.println("Check: " + i + " " + j);
                         if (!VALID_NUMBERS.contains(charToAnalyze) && !Objects.equals(charToAnalyze, ".")) {
-                           // System.out.println("ValidChar: " + charToAnalyze + "(Coords: " + i + " " + j + ")");
+                            // System.out.println("ValidChar: " + charToAnalyze + "(Coords: " + i + " " + j + ")");
                             return true;
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         //...
                     }
                 }
@@ -165,41 +165,41 @@ public class Main {
 
     private static boolean checkSurroundingAsterisk(
             final String[][] array,
-            FoundNumber foundValidNumberData,
-            Map<String, FoundAsterisk> asteriskMap
+            final FoundNumber foundValidNumberData,
+            final Map<String, FoundAsterisk> asteriskMap
     ) {
         // System.out.println("Check for number: " + foundValidNumberData.getNumber());
 
-        Integer indexStart = foundValidNumberData.indexStart();
-        Integer indexEnd = foundValidNumberData.indexEnd();
-        Integer line = foundValidNumberData.line();
+        final Integer indexStart = foundValidNumberData.indexStart();
+        final Integer indexEnd = foundValidNumberData.indexEnd();
+        final Integer line = foundValidNumberData.line();
 
-        List<Integer> rangeList = List.of(-1, 0, 1);
+        final List<Integer> rangeList = List.of(-1, 0, 1);
 
         // Check the surrounding around the whole string.
         for (int additional = 0; additional <= indexEnd - indexStart; additional++) {
-            for (Integer rangeI : rangeList) {
-                for (Integer rangeJ : rangeList) {
-                    int i = line + rangeJ;
-                    int j = indexStart + rangeI + additional;
+            for (final Integer rangeI : rangeList) {
+                for (final Integer rangeJ : rangeList) {
+                    final int i = line + rangeJ;
+                    final int j = indexStart + rangeI + additional;
 
                     try {
                         final String charToAnalyze = array[i][j];
 
-                      //  System.out.println("Check: " + i + " " + j + " : " + charToAnalyze);
+                        //  System.out.println("Check: " + i + " " + j + " : " + charToAnalyze);
                         if (Objects.equals(charToAnalyze, ASTERISK)) {
-                        //    System.out.println("Valid Asterisk: " + charToAnalyze + "(Coords: " + i + " " + j + ")");
+                            //    System.out.println("Valid Asterisk: " + charToAnalyze + "(Coords: " + i + " " + j + ")");
 
-                            String key = i + "-" + j;
+                            final String key = i + "-" + j;
                             asteriskMap.computeIfAbsent(key, k -> new FoundAsterisk(i, j));
-                            FoundAsterisk asterisk = asteriskMap.get(key);
+                            final FoundAsterisk asterisk = asteriskMap.get(key);
                             if (!asterisk.getFoundByNumber().contains(foundValidNumberData)) {
                                 asterisk.getNumbers().add(foundValidNumberData.number());
                                 asterisk.getFoundByNumber().add(foundValidNumberData);
                             }
 
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         //...
                     }
                 }
@@ -213,12 +213,16 @@ public class Main {
      * Contains all information about the found asterisk.
      */
     private static class FoundAsterisk {
+
         private Set<FoundNumber> foundByNumber;
         private int line;
         private int column;
         private List<Integer> numbers;
 
-        public FoundAsterisk(int line, int column) {
+        public FoundAsterisk(
+                final int line,
+                final int column
+        ) {
             this.line = line;
             this.column = column;
             this.numbers = new ArrayList<>();
@@ -237,6 +241,8 @@ public class Main {
     /**
      * Contains all information about the found number.
      */
-    public record FoundNumber(int indexStart, int indexEnd, int line, int number) {    }
+    public record FoundNumber(int indexStart, int indexEnd, int line, int number) {
+
+    }
 
 }

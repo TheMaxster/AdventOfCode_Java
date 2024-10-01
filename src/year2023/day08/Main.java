@@ -13,29 +13,29 @@ import utils.Utils;
 public class Main {
 
 
-    public static void main(String[] args) {
-        // final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_01.txt";
-        //   final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_02.txt";
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08_test_03.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day08/input_08.txt";
+    public static void main(final String[] args) {
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day08/input_test_01.txt";
+        //   final String filePath = System.getProperty("user.dir") + "/resources/year2023/day08/input_test_02.txt";
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day08/input_test_03.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day08/input.txt";
 
-        List<String> importList = ImportUtils.readAsList(filePath);
+        final List<String> importList = ImportUtils.readAsList(filePath);
 
-        String pathInstruction = importList.get(0);
+        final String pathInstruction = importList.get(0);
 
-        HashMap<String, LeftRightTuple> navigationMap = new HashMap<>();
+        final HashMap<String, LeftRightTuple> navigationMap = new HashMap<>();
 
         for (int i = 2; i < importList.size(); i++) {
-            String[] equationSplit = importList.get(i).split("=");
-            String key = equationSplit[0].trim();
-            String[] leftRightPair = equationSplit[1].split(",");
-            String left = leftRightPair[0].replace("(", "").trim();
-            String right = leftRightPair[1].replace(")", "").trim();
-            LeftRightTuple leftRightTuple = new LeftRightTuple(left, right);
+            final String[] equationSplit = importList.get(i).split("=");
+            final String key = equationSplit[0].trim();
+            final String[] leftRightPair = equationSplit[1].split(",");
+            final String left = leftRightPair[0].replace("(", "").trim();
+            final String right = leftRightPair[1].replace(")", "").trim();
+            final LeftRightTuple leftRightTuple = new LeftRightTuple(left, right);
             navigationMap.put(key, leftRightTuple);
         }
 
-        String[] pathInstructionArray = pathInstruction.split("");
+        final String[] pathInstructionArray = pathInstruction.split("");
         Utils.log("Path: " + pathInstruction);
 
         //        // Part 1: Define our starting key.
@@ -47,8 +47,8 @@ public class Main {
         // ---------------------------------------------------------------------------------------------------
 
         // Part 2: Define our starting keys.
-        List<String> startingKeys = new ArrayList<>();
-        for (Map.Entry<String, LeftRightTuple> entry : navigationMap.entrySet()) {
+        final List<String> startingKeys = new ArrayList<>();
+        for (final Map.Entry<String, LeftRightTuple> entry : navigationMap.entrySet()) {
             if (entry.getKey().endsWith("A")) {
                 startingKeys.add(entry.getKey());
             }
@@ -56,8 +56,8 @@ public class Main {
 
         // IMPORTANT: This approach is brute force, but more correct than the approach with least common multiple. The lcm approach only works with special test data.
 
-        Map<String, String> newNavigationMap = createNavigationMapForFullPath(pathInstructionArray, navigationMap);
-        long multiplier = pathInstructionArray.length;
+        final Map<String, String> newNavigationMap = createNavigationMapForFullPath(pathInstructionArray, navigationMap);
+        final long multiplier = pathInstructionArray.length;
         //        long steps = iterativeBruteForceApproachForPart2(newNavigationMap, startingKeys);
         //        long result = steps * multiplier;
         //        Utils.log("Solution Part 2: We reached **Z in steps: " + result);
@@ -79,8 +79,8 @@ public class Main {
 
     private static void iterativeLeastCommonMultipleApproachForPart2(
             final Map<String, String> newNavigationMap,
-            List<String> startingKeys,
-            Map<String, Long> paths
+            final List<String> startingKeys,
+            final Map<String, Long> paths
     ) {
 
         for (int i = 0; i < startingKeys.size(); i++) {
@@ -90,7 +90,7 @@ public class Main {
         for (int i = 0; i < startingKeys.size(); i++) {
             long steps = 0L;
 
-            String startingKey = startingKeys.get(i);
+            final String startingKey = startingKeys.get(i);
 
             String tmpNode = startingKey;
             while (!tmpNode.endsWith("Z")) {
@@ -103,13 +103,13 @@ public class Main {
     }
 
     private static long leastCommonMultiple(
-            long number1,
-            long number2
+            final long number1,
+            final long number2
     ) {
-        long absNumber1 = Math.abs(number1);
-        long absNumber2 = Math.abs(number2);
-        long absHigherNumber = Math.max(absNumber1, absNumber2);
-        long absLowerNumber = Math.min(absNumber1, absNumber2);
+        final long absNumber1 = Math.abs(number1);
+        final long absNumber2 = Math.abs(number2);
+        final long absHigherNumber = Math.max(absNumber1, absNumber2);
+        final long absLowerNumber = Math.min(absNumber1, absNumber2);
         long lcm = absHigherNumber;
         while (lcm % absLowerNumber != 0) {
             lcm += absHigherNumber;
@@ -124,7 +124,7 @@ public class Main {
     ) {
 
         long pathsThatEndWithZ = 0;
-        long numberOfPaths = startingKeys.size();
+        final long numberOfPaths = startingKeys.size();
 
         long steps = 0L;
 
@@ -157,16 +157,16 @@ public class Main {
             final HashMap<String, LeftRightTuple> navigationMap
     ) {
 
-        HashMap<String, String> newNavigationMap = new HashMap<>();
-        for (Map.Entry<String, LeftRightTuple> entry : navigationMap.entrySet()) {
+        final HashMap<String, String> newNavigationMap = new HashMap<>();
+        for (final Map.Entry<String, LeftRightTuple> entry : navigationMap.entrySet()) {
 
-            String start = entry.getKey();
+            final String start = entry.getKey();
             String nextPathKey = entry.getKey();
 
             for (int i = 0; i < pathInstructionArray.length; i++) {
                 final String nextDirection = pathInstructionArray[i];
 
-                LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
+                final LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
                 if (Objects.equals(nextDirection, "L")) {
                     nextPathKey = currenctLocation.left();
                 } else if (Objects.equals(nextDirection, "R")) {
@@ -187,8 +187,8 @@ public class Main {
     ) {
         for (int i = 0; i < pathInstructionArray.length; i++) {
 
-            String nextDirection = pathInstructionArray[i];
-            LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
+            final String nextDirection = pathInstructionArray[i];
+            final LeftRightTuple currenctLocation = navigationMap.get(nextPathKey);
             if (Objects.equals(nextDirection, "L")) {
                 nextPathKey = currenctLocation.left();
             } else if (Objects.equals(nextDirection, "R")) {

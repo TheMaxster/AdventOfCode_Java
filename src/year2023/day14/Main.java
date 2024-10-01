@@ -12,36 +12,36 @@ import utils.Utils;
 
 public class Main {
 
-    public static void main(String[] args) {
-      //  final String filePath = System.getProperty("user.dir") + "/resources/days/day14/input_14_test_01.txt";
-        // final String filePath = System.getProperty("user.dir") + "/resources/days/day14/input_14_test_01_02.txt";
-          final String filePath = System.getProperty("user.dir") + "/resources/days/day14/input_14.txt";
+    public static void main(final String[] args) {
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day14/input_test_01.txt";
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day14/input_test_01_02.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day14/input.txt";
 
-        String[][] importArray = ImportUtils.readAsArray(filePath);
-        String[][] transposedImportArray = Utils.transpose(importArray);
+        final String[][] importArray = ImportUtils.readAsArray(filePath);
+        final String[][] transposedImportArray = Utils.transpose(importArray);
 
         // Part 1
-        String[][] resultPart1 = calculatePart1(transposedImportArray);
-        String[][] retransposedImportArrayForPart1 = Utils.transpose(resultPart1);
+        final String[][] resultPart1 = calculatePart1(transposedImportArray);
+        final String[][] retransposedImportArrayForPart1 = Utils.transpose(resultPart1);
         Utils.printMap(retransposedImportArrayForPart1);
-        int totalPointsForAllRowsPart1 = calculateTotalPointsForMap(retransposedImportArrayForPart1);
+        final int totalPointsForAllRowsPart1 = calculateTotalPointsForMap(retransposedImportArrayForPart1);
         Utils.log("Part 1: Total points: " + totalPointsForAllRowsPart1);
 
         // Part 2
-        Map<String, Long> cacheMap = new HashMap<>();
-        long turnsToMake = 1000000000;
+        final Map<String, Long> cacheMap = new HashMap<>();
+        final long turnsToMake = 1000000000;
 
         String[][] tmpArray = transposedImportArray;
 
         long leftOverTurnsToMake = 0;
         for (long i = 0; i < turnsToMake; i++) {
 
-            String hash = Utils.generateHash(tmpArray);
-            Long foundIndex = cacheMap.getOrDefault(hash,null);
+            final String hash = Utils.generateHash(tmpArray);
+            final Long foundIndex = cacheMap.getOrDefault(hash, null);
             if (foundIndex != null) {
-                long cycleLength = i - foundIndex;
-                long remainingCycles = (turnsToMake - i + 1) % cycleLength;
-                leftOverTurnsToMake = remainingCycles-1;
+                final long cycleLength = i - foundIndex;
+                final long remainingCycles = (turnsToMake - i + 1) % cycleLength;
+                leftOverTurnsToMake = remainingCycles - 1;
                 break;
             }
 
@@ -54,10 +54,10 @@ public class Main {
             tmpArray = turnOneCycle(tmpArray);
         }
 
-        String[][] retransposedImportArray = Utils.transpose(tmpArray);
+        final String[][] retransposedImportArray = Utils.transpose(tmpArray);
         Utils.printMap(retransposedImportArray);
 
-        int totalPointsForAllRowsPart2 = calculateTotalPointsForMap(retransposedImportArray);
+        final int totalPointsForAllRowsPart2 = calculateTotalPointsForMap(retransposedImportArray);
         Utils.log("Part 2: Total points: " + totalPointsForAllRowsPart2);
 
     }
@@ -65,7 +65,7 @@ public class Main {
     private static Integer calculateTotalPointsForMap(final String[][] map) {
         int totalPoints = 0;
         int points = map.length;
-        for (String[] column : map) {
+        for (final String[] column : map) {
             for (int i = column.length - 1; i >= 0; i--) {
                 if (Objects.equals(column[i], "O")) {
                     totalPoints += points;
@@ -89,23 +89,23 @@ public class Main {
         return Utils.rotateLeft(tiltedEast); // Get back in north position.
     }
 
-    private static String[][] calculatePart1(String[][] transposedImportArray) {
+    private static String[][] calculatePart1(final String[][] transposedImportArray) {
         return tiltArrayNorth(transposedImportArray);
     }
 
     private static String[][] tiltArrayNorth(final String[][] transposedImportArray) {
-        String[][] northTiltedArray = new String[transposedImportArray.length][transposedImportArray[0].length];
+        final String[][] northTiltedArray = new String[transposedImportArray.length][transposedImportArray[0].length];
         for (int j = 0; j < transposedImportArray.length; j++) {
-            String[] column = transposedImportArray[j];
+            final String[] column = transposedImportArray[j];
             final List<Integer> pointsForRow = calculateNewPointsForColumn(column);
-            String[] newColumn = createNewColumn(column, pointsForRow);
+            final String[] newColumn = createNewColumn(column, pointsForRow);
             northTiltedArray[j] = newColumn;
         }
         return northTiltedArray;
     }
 
     private static List<Integer> calculateNewPointsForColumn(final String[] column) {
-        List<Integer> newPointsForColumn = new ArrayList<>();
+        final List<Integer> newPointsForColumn = new ArrayList<>();
 
         int maxPoints = column.length;
 
@@ -126,7 +126,7 @@ public class Main {
             final String[] column,
             final List<Integer> pointsForRow
     ) {
-        String[] newColumn = Arrays.copyOf(column, column.length);
+        final String[] newColumn = Arrays.copyOf(column, column.length);
 
         for (int i = column.length - 1; i >= 0; i--) {
             if (Objects.equals(newColumn[i], "O")) {

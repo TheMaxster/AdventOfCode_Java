@@ -19,32 +19,32 @@ public class Part2 {
 
     }
 
-    public static void main(String[] args) {
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19.txt";
+    public static void main(final String[] args) {
+        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input.txt";
 
-        List<String> importData = ImportUtils.readAsList(filePath);
+        final List<String> importData = ImportUtils.readAsList(filePath);
 
-        Map<String, List<Rule>> workflows = new HashMap<>();
+        final Map<String, List<Rule>> workflows = new HashMap<>();
 
         boolean skipToParts = false;
-        for (String line : importData) {
+        for (final String line : importData) {
             if (line.isBlank()) {
                 skipToParts = true;
                 continue;
             }
 
             if (!skipToParts) {
-                String[] split = line.split("\\{");
-                String workflow = split[0];
-                String[] rules = split[1].substring(0, split[1].length() - 1).split(",");
-                List<Rule> rulesList = new ArrayList<>();
-                for (String rule : rules) {
+                final String[] split = line.split("\\{");
+                final String workflow = split[0];
+                final String[] rules = split[1].substring(0, split[1].length() - 1).split(",");
+                final List<Rule> rulesList = new ArrayList<>();
+                for (final String rule : rules) {
                     if (rule.contains(":")) {
-                        String letter = rule.substring(0, 1);
-                        String operator = rule.substring(1, 2);
-                        int value = Integer.parseInt(rule.substring(2).split(":")[0]);
-                        String consequence = rule.substring(2).split(":")[1];
+                        final String letter = rule.substring(0, 1);
+                        final String operator = rule.substring(1, 2);
+                        final int value = Integer.parseInt(rule.substring(2).split(":")[0]);
+                        final String consequence = rule.substring(2).split(":")[1];
                         rulesList.add(new Rule(letter, operator, value, consequence));
                     } else {
                         rulesList.add(new Rule("else", null, 0, rule));
@@ -64,9 +64,9 @@ public class Part2 {
                         List<Rule> rules = workflows.get("in");
 
                         while (rules != null) {
-                            for (Rule rule : rules) {
+                            for (final Rule rule : rules) {
                                 if (!Objects.equals(rule.letter, "else")) {
-                                    int letter = switch (rule.letter()) {
+                                    final int letter = switch (rule.letter()) {
                                         case "x" -> x;
                                         case "m" -> m;
                                         case "a" -> a;
@@ -74,7 +74,7 @@ public class Part2 {
                                         default -> throw new IllegalStateException("Unexpected value: " + rule.letter());
                                     };
 
-                                    boolean result = switch (rule.operator()) {
+                                    final boolean result = switch (rule.operator()) {
                                         case "<" -> letter < rule.value;
                                         case ">" -> letter > rule.value;
                                         default -> throw new IllegalStateException("Unexpected value: " + rule.operator());
@@ -114,10 +114,10 @@ public class Part2 {
                         }
                     }
                 }
-                Utils.log("m: "+m);
+                Utils.log("m: " + m);
             }
 
-            Utils.log("x: "+x);
+            Utils.log("x: " + x);
         }
 
         Utils.log("All accepted: " + accepted);

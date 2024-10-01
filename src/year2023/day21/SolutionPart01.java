@@ -1,4 +1,4 @@
-package year2023.day22;
+package year2023.day21;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.Set;
 import utils.ImportUtils;
 import utils.Utils;
 
-public class SolutionPart1 {
+public class SolutionPart01 {
 
     private record Coordinates(int x, int y) {
 

@@ -15,45 +15,43 @@ public class Main {
 
     private static final Map<String, Integer> VALUE_MAP = initializeMap();
 
-    public static void main(String[] args) {
-       // final String filePath = System.getProperty("user.dir") + "/resources/days/day07/input_07_test_01.txt";
-       final String filePath = System.getProperty("user.dir") + "/resources/days/day07/input_07.txt";
+    public static void main(final String[] args) {
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day07/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day07/input.txt";
 
-        List<String> dataList = ImportUtils.readAsList(filePath);
+        final List<String> dataList = ImportUtils.readAsList(filePath);
 
-        List<HandBidPair> handBidPairs = new ArrayList<>();
-        for (String handAndBid : dataList) {
-            String[] handBidSplit = handAndBid.split(" ");
+        final List<HandBidPair> handBidPairs = new ArrayList<>();
+        for (final String handAndBid : dataList) {
+            final String[] handBidSplit = handAndBid.split(" ");
 
-            String hand = handBidSplit[0];
-            Integer bid = Integer.valueOf(handBidSplit[1]);
+            final String hand = handBidSplit[0];
+            final Integer bid = Integer.valueOf(handBidSplit[1]);
 
             handBidPairs.add(new HandBidPair(hand, bid));
         }
 
-        List<HandBidPair> fiveOfAKindList = new ArrayList<>();
-        List<HandBidPair> fourOfAKindList = new ArrayList<>();
-        List<HandBidPair> fullHouseList = new ArrayList<>();
-        List<HandBidPair> threeOfAKindList = new ArrayList<>();
-        List<HandBidPair> twoPairList = new ArrayList<>();
-        List<HandBidPair> onePairList = new ArrayList<>();
-        List<HandBidPair> highCardList = new ArrayList<>();
+        final List<HandBidPair> fiveOfAKindList = new ArrayList<>();
+        final List<HandBidPair> fourOfAKindList = new ArrayList<>();
+        final List<HandBidPair> fullHouseList = new ArrayList<>();
+        final List<HandBidPair> threeOfAKindList = new ArrayList<>();
+        final List<HandBidPair> twoPairList = new ArrayList<>();
+        final List<HandBidPair> onePairList = new ArrayList<>();
+        final List<HandBidPair> highCardList = new ArrayList<>();
 
-        for (HandBidPair handBidPair : handBidPairs) {
+        for (final HandBidPair handBidPair : handBidPairs) {
 
-            String hand = handBidPair.hand();
-
-
+            final String hand = handBidPair.hand();
 
             List<LetterFrequency> letterFrequencies = calculateLetterFrequencies(hand);
 
             // Part 2: Modify the hand to use J as Joker.
-            Optional<LetterFrequency> maxLetterOpt = letterFrequencies.stream().filter(l -> !Objects.equals(l.letter(), "J")).findFirst();
-            if(maxLetterOpt.isPresent()) {
-                String modifiedHand = hand.replaceAll("J", maxLetterOpt.get().letter());
+            final Optional<LetterFrequency> maxLetterOpt = letterFrequencies.stream().filter(l -> !Objects.equals(l.letter(), "J"))
+                    .findFirst();
+            if (maxLetterOpt.isPresent()) {
+                final String modifiedHand = hand.replaceAll("J", maxLetterOpt.get().letter());
                 letterFrequencies = calculateLetterFrequencies(modifiedHand);
             }
-
 
             if (checkFiveOfAKind(letterFrequencies)) {
                 fiveOfAKindList.add(handBidPair);
@@ -72,7 +70,7 @@ public class Main {
             }
         }
 
-        FirstCardComparator comparator = new FirstCardComparator();
+        final FirstCardComparator comparator = new FirstCardComparator();
 
         fiveOfAKindList.sort(comparator);
         fourOfAKindList.sort(comparator);
@@ -82,7 +80,7 @@ public class Main {
         onePairList.sort(comparator);
         highCardList.sort(comparator);
 
-        List<HandBidPair> theBigList = new ArrayList<>();
+        final List<HandBidPair> theBigList = new ArrayList<>();
         theBigList.addAll(highCardList);
         theBigList.addAll(onePairList);
         theBigList.addAll(twoPairList);
@@ -93,11 +91,11 @@ public class Main {
 
         int sum = 0;
 
-        for (int i = theBigList.size()-1; i >= 0; i--) {
-            Utils.log(theBigList.get(i).hand() + " -> "+theBigList.get(i).bid().toString());
+        for (int i = theBigList.size() - 1; i >= 0; i--) {
+            Utils.log(theBigList.get(i).hand() + " -> " + theBigList.get(i).bid().toString());
 
-            HandBidPair pair = theBigList.get(i);
-            int summand = (i + 1) * pair.bid();
+            final HandBidPair pair = theBigList.get(i);
+            final int summand = (i + 1) * pair.bid();
             sum += summand;
 
         }
@@ -106,18 +104,18 @@ public class Main {
 
     }
 
-    private static List<LetterFrequency> calculateLetterFrequencies(String hand) {
+    private static List<LetterFrequency> calculateLetterFrequencies(final String hand) {
 
-        Map<String, Integer> frequencyMap = new HashMap<>();
-        for (String s : hand.split("")) {
+        final Map<String, Integer> frequencyMap = new HashMap<>();
+        for (final String s : hand.split("")) {
             frequencyMap.put(s, frequencyMap.getOrDefault(s, 0) + 1);
         }
 
-        List<LetterFrequency> letterFrequencies = new ArrayList<>();
+        final List<LetterFrequency> letterFrequencies = new ArrayList<>();
 
-        for (Map.Entry<String, Integer> entry : frequencyMap.entrySet()) {
-            int frequency = entry.getValue();
-            String letter = entry.getKey();
+        for (final Map.Entry<String, Integer> entry : frequencyMap.entrySet()) {
+            final int frequency = entry.getValue();
+            final String letter = entry.getKey();
 
             letterFrequencies.add(new LetterFrequency(letter, frequency));
         }
@@ -127,36 +125,36 @@ public class Main {
         return letterFrequencies;
     }
 
-    private static boolean checkFiveOfAKind(List<LetterFrequency> letterFrequencies) {
+    private static boolean checkFiveOfAKind(final List<LetterFrequency> letterFrequencies) {
         return letterFrequencies.get(0).frequency() == 5;
     }
 
-    private static boolean checkFourOfAKind(List<LetterFrequency> letterFrequencies) {
+    private static boolean checkFourOfAKind(final List<LetterFrequency> letterFrequencies) {
         return letterFrequencies.get(0).frequency() == 4;
     }
 
-    private static boolean checkFullHouse(List<LetterFrequency> letterFrequencies) {
+    private static boolean checkFullHouse(final List<LetterFrequency> letterFrequencies) {
         return letterFrequencies.get(0).frequency() == 3
                 && letterFrequencies.get(1).frequency() == 2;
     }
 
-    private static boolean checkThreeOfAKind(List<LetterFrequency> letterFrequencies) {
+    private static boolean checkThreeOfAKind(final List<LetterFrequency> letterFrequencies) {
         return letterFrequencies.get(0).frequency() == 3;
     }
 
-    private static boolean checkTwoPair(List<LetterFrequency> letterFrequencies) {
+    private static boolean checkTwoPair(final List<LetterFrequency> letterFrequencies) {
         return letterFrequencies.get(0).frequency() == 2
                 && letterFrequencies.get(1).frequency() == 2;
     }
 
-    private static boolean checkOnePair(List<LetterFrequency> letterFrequencies) {
+    private static boolean checkOnePair(final List<LetterFrequency> letterFrequencies) {
         return letterFrequencies.get(0).frequency() == 2
                 && letterFrequencies.get(1).frequency() != 2;
     }
 
     private static Map<String, Integer> initializeMap() {
 
-        Map<String, Integer> valueMap = new HashMap<>();
+        final Map<String, Integer> valueMap = new HashMap<>();
         valueMap.put("J", 1);
         valueMap.put("2", 2);
         valueMap.put("3", 3);
@@ -190,11 +188,11 @@ public class Main {
 
         @Override
         public int compare(
-                HandBidPair o1,
-                HandBidPair o2
+                final HandBidPair o1,
+                final HandBidPair o2
         ) {
-            String[] splittedHand1 = o1.hand().split("");
-            String[] splittedHand2 = o2.hand().split("");
+            final String[] splittedHand1 = o1.hand().split("");
+            final String[] splittedHand2 = o2.hand().split("");
 
             return compare(splittedHand1, splittedHand2);
         }

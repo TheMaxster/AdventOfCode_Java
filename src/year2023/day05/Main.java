@@ -19,21 +19,21 @@ public class Main {
     private static List<MappingData> temperatureToHumidityMap = new ArrayList<>();
     private static List<MappingData> humidityToLocationMap = new ArrayList<>();
 
-    public static void main(String[] args) {
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day05/input_05_test_01.txt";
-        //final String filePath = System.getProperty("user.dir") + "/resources/days/day05/input_05.txt";
+    public static void main(final String[] args) {
+        //final String filePath = System.getProperty("user.dir") + "/resources/year2023/day05/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day05/input.txt";
 
-        List<BigInteger> seedValues = new ArrayList<>();
+        final List<BigInteger> seedValues = new ArrayList<>();
 
         try {
-            File file = new File(filePath);
-            Scanner scanner = new Scanner(file);
+            final File file = new File(filePath);
+            final Scanner scanner = new Scanner(file);
 
             // Read line with seeds.
             if (scanner.hasNextLine()) {
-                String seedsLine = scanner.nextLine();
-                String[] seedTokens = seedsLine.replace("seeds:", "").trim().split(" ");
-                for (String seedToken : seedTokens) {
+                final String seedsLine = scanner.nextLine();
+                final String[] seedTokens = seedsLine.replace("seeds:", "").trim().split(" ");
+                for (final String seedToken : seedTokens) {
                     seedValues.add(new BigInteger(seedToken));
                 }
             }
@@ -48,7 +48,7 @@ public class Main {
             humidityToLocationMap = parseMap(scanner);
 
             scanner.close();
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             System.err.println("File not found: " + filePath);
             e.printStackTrace();
         }
@@ -57,83 +57,81 @@ public class Main {
         System.out.println("Print maps for testing only:");
         printMap(seedToSoilMap);
         printMap(soilToFertilizerMap);
-// Repeat for other maps...
+        // Repeat for other maps...
 
         // Part 1
         final List<BigInteger> locations = new ArrayList<>();
 
-        for (BigInteger seed : seedValues) {
+        for (final BigInteger seed : seedValues) {
             final BigInteger location = analyzeSeed(seed);
             locations.add(location);
-         //   System.out.println("---------------");
+            //   System.out.println("---------------");
         }
 
-        BigInteger minValue = locations.stream()
+        final BigInteger minValue = locations.stream()
                 .min(BigInteger::compareTo)
                 .orElse(BigInteger.ZERO);
-        System.out.println("Part 1 Location Minimum: "+minValue.toString());
+        System.out.println("Part 1 Location Minimum: " + minValue.toString());
 
         // Part 2
 
-        BigInteger minimum = null;
+        final BigInteger minimum = null;
 
-        List<Tuple> tupleList =new ArrayList<>();
+        final List<Tuple> tupleList = new ArrayList<>();
 
         for (int i = 0; i < seedValues.size(); i = i + 2) {
-            BigInteger start = seedValues.get(i);
-            BigInteger range = seedValues.get(i + 1);
+            final BigInteger start = seedValues.get(i);
+            final BigInteger range = seedValues.get(i + 1);
 
             tupleList.add(new Tuple(start, range));
 
-//            BigInteger tmpMinimum = analyseNumbersInRange(start, range);
-//            System.out.println("Minimum: "+tmpMinimum.toString()+" (Range: "+start+", "+range+")");
-//
-//            if (minimum == null) {
-//                minimum = tmpMinimum;
-//            } else {
-//                minimum = minimum.min(tmpMinimum);
-//            }
+            //            BigInteger tmpMinimum = analyseNumbersInRange(start, range);
+            //            System.out.println("Minimum: "+tmpMinimum.toString()+" (Range: "+start+", "+range+")");
+            //
+            //            if (minimum == null) {
+            //                minimum = tmpMinimum;
+            //            } else {
+            //                minimum = minimum.min(tmpMinimum);
+            //            }
         }
 
-        List<BigInteger> resultList = tupleList.parallelStream()
+        final List<BigInteger> resultList = tupleList.parallelStream()
                 .map(tuple -> analyseNumbersInRange(tuple.start(), tuple.range()))
                 .toList();
 
+        final BigInteger minimum2 = Collections.min(resultList);
 
-        BigInteger minimum2 = Collections.min(resultList);
-
-        System.out.println("Part 2 Location Minimum: "+minimum2.toString());
+        System.out.println("Part 2 Location Minimum: " + minimum2.toString());
     }
 
     private static BigInteger analyzeSeed(
             final BigInteger seed
     ) {
         //        System.out.println("Seed: " + seed);
-        BigInteger soil = handleMap(seedToSoilMap, seed);
+        final BigInteger soil = handleMap(seedToSoilMap, seed);
         //        System.out.println("Soil: " + soil);
-        BigInteger fertilizer = handleMap(soilToFertilizerMap, soil);
+        final BigInteger fertilizer = handleMap(soilToFertilizerMap, soil);
         //        System.out.println("Fertilizer: " + fertilizer);
-        BigInteger water = handleMap(fertilizerToWaterMap, fertilizer);
+        final BigInteger water = handleMap(fertilizerToWaterMap, fertilizer);
         //        System.out.println("Water: " + water);
-        BigInteger light = handleMap(waterToLightMap, water);
+        final BigInteger light = handleMap(waterToLightMap, water);
         //        System.out.println("Light: " + light);
-        BigInteger temperature = handleMap(lightToTemperatureMap, light);
+        final BigInteger temperature = handleMap(lightToTemperatureMap, light);
         //        System.out.println("Temperature: " + temperature);
-        BigInteger humidity = handleMap(temperatureToHumidityMap, temperature);
+        final BigInteger humidity = handleMap(temperatureToHumidityMap, temperature);
         //        System.out.println("Humidity: " + humidity);
-        BigInteger location = handleMap(humidityToLocationMap, humidity);
+        final BigInteger location = handleMap(humidityToLocationMap, humidity);
         //        System.out.println("Location: " + location);
         return location;
     }
 
 
-
     private static BigInteger analyseNumbersInRange(
-            BigInteger start,
-            BigInteger range
+            final BigInteger start,
+            final BigInteger range
     ) {
         BigInteger current = start;
-        BigInteger end = start.add(range).subtract(BigInteger.ONE);
+        final BigInteger end = start.add(range).subtract(BigInteger.ONE);
 
         BigInteger minimum = null;
 
@@ -150,16 +148,16 @@ public class Main {
             current = current.add(BigInteger.ONE);
         }
 
-        System.out.println("Minimum: "+minimum+" (Range: "+start+", "+range+")");
+        System.out.println("Minimum: " + minimum + " (Range: " + start + ", " + range + ")");
         return minimum;
 
     }
 
-    private static List<MappingData> parseMap(Scanner scanner) {
+    private static List<MappingData> parseMap(final Scanner scanner) {
         scanner.nextLine();
-        List<MappingData> map = new ArrayList<>();
+        final List<MappingData> map = new ArrayList<>();
         while (scanner.hasNextLine()) {
-            String line = scanner.nextLine().trim();
+            final String line = scanner.nextLine().trim();
 
             // Skip line if empty
             if (line.isEmpty()) {
@@ -167,10 +165,10 @@ public class Main {
             }
 
             if (!line.contains("-to-")) {
-                String[] values = line.split(" ");
-                BigInteger destinationRangeStart = new BigInteger(values[0]);
-                BigInteger sourceRangeStart = new BigInteger(values[1]);
-                BigInteger range = new BigInteger(values[2]);
+                final String[] values = line.split(" ");
+                final BigInteger destinationRangeStart = new BigInteger(values[0]);
+                final BigInteger sourceRangeStart = new BigInteger(values[1]);
+                final BigInteger range = new BigInteger(values[2]);
                 map.add(new MappingData(destinationRangeStart, sourceRangeStart, range));
             }
         }
@@ -179,13 +177,13 @@ public class Main {
 
 
     private static BigInteger handleMap(
-            List<MappingData> map,
-            BigInteger input
+            final List<MappingData> map,
+            final BigInteger input
     ) {
-        for (MappingData mappingData : map) {
-            BigInteger sourceRangeStart = mappingData.sourceRangeStart();
-            BigInteger range = mappingData.range();
-            BigInteger sourceRangeEnd = sourceRangeStart.add(range);
+        for (final MappingData mappingData : map) {
+            final BigInteger sourceRangeStart = mappingData.sourceRangeStart();
+            final BigInteger range = mappingData.range();
+            final BigInteger sourceRangeEnd = sourceRangeStart.add(range);
             if (input.compareTo(sourceRangeStart) >= 0 && input.compareTo(sourceRangeEnd) < 0) {
                 //                System.out.println("Input: "+input);
                 //                System.out.println("Source Range start: "+sourceRangeStart);
@@ -198,17 +196,21 @@ public class Main {
         return input;
     }
 
-    private static void printMap(List<MappingData> map) {
-        for (MappingData data : map) {
+    private static void printMap(final List<MappingData> map) {
+        for (final MappingData data : map) {
             System.out.println("Destination Range Start: " + data.destinationRangeStart +
                     ", Source Range Start: " + data.sourceRangeStart +
                     ", Range: " + data.range);
         }
     }
 
-    public record Tuple(BigInteger start, BigInteger range){    }
+    public record Tuple(BigInteger start, BigInteger range) {
 
-    public record MappingData(BigInteger destinationRangeStart, BigInteger sourceRangeStart, BigInteger range) {    }
+    }
+
+    public record MappingData(BigInteger destinationRangeStart, BigInteger sourceRangeStart, BigInteger range) {
+
+    }
 
 
 }

@@ -13,18 +13,18 @@ import utils.Utils;
 
 public class SolutionPart01 {
 
-    public static void main(String[] args) {
-       // final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_01.txt";
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20_test_02.txt";
-         final String filePath = System.getProperty("user.dir") + "/resources/days/day20/input_20.txt";
+    public static void main(final String[] args) {
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day20/input_test_01.txt";
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day20/input_test_02.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day20/input.txt";
 
-        List<String> input = ImportUtils.readAsList(filePath);
+        final List<String> input = ImportUtils.readAsList(filePath);
 
-        List<Module> modules = new ArrayList<>();
+        final List<Module> modules = new ArrayList<>();
 
-        for (String configString : input) {
-            Module module = new Module();
-            String[] split = configString.split(" -> ");
+        for (final String configString : input) {
+            final Module module = new Module();
+            final String[] split = configString.split(" -> ");
             module.setDest(Arrays.stream(split[1].split(",")).map(String::trim).toList());
 
             if (configString.startsWith("broadcaster")) {
@@ -43,29 +43,29 @@ public class SolutionPart01 {
         }
 
         // Define the first void module.
-        Module outputModule = new Module();
+        final Module outputModule = new Module();
         outputModule.setUid("output");
         outputModule.setType(Direction.OUTPUT);
         outputModule.setDest(new ArrayList<>());
         modules.add(outputModule);
 
         // Define the second void module.
-        Module outputModule2 = new Module();
+        final Module outputModule2 = new Module();
         outputModule2.setUid("rx");
         outputModule2.setType(Direction.OUTPUT);
         outputModule2.setDest(new ArrayList<>());
         modules.add(outputModule2);
 
         // Create a model map.
-        Map<String, Module> map = modules.stream().collect(Collectors.toMap(
+        final Map<String, Module> map = modules.stream().collect(Collectors.toMap(
                 a -> a.getUid(),
                 a -> a
         ));
 
         // Update all conjunction modules.
-        for (Module module : modules) {
+        for (final Module module : modules) {
             if (module.getMemory() != null) {
-                List<String> allBefore = modules.stream()
+                final List<String> allBefore = modules.stream()
                         .filter(a -> a.getDest().contains(module.getUid()))
                         .map(Module::getUid)
                         .toList();
@@ -84,19 +84,19 @@ public class SolutionPart01 {
 
             Utils.log("----------------------------------------------------");
 
-            LinkedList<QueueElement> queue = new LinkedList<>();
+            final LinkedList<QueueElement> queue = new LinkedList<>();
             queue.push(new QueueElement(null, null, checkAndGet(map, "broadcaster")));
             lowPulses++; // Pushing the button counts as a low pulse.
 
             while (!queue.isEmpty()) {
-                QueueElement currentElement = queue.poll();
-                Module currentModule = currentElement.currentModule();
+                final QueueElement currentElement = queue.poll();
+                final Module currentModule = currentElement.currentModule();
 
                 Utils.log("send " + currentElement.pulse() + " to " + currentModule.getUid());
 
                 switch (currentModule.getType()) {
                     case BROADCAST -> {
-                        for (String dest : currentModule.getDest()) {
+                        for (final String dest : currentModule.getDest()) {
                             queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                             lowPulses++;
                         }
@@ -104,14 +104,14 @@ public class SolutionPart01 {
                     case FLIP_FLOP -> {
                         if (Pulse.LOW.equals(currentElement.pulse)) {
                             if (State.ON.equals(currentModule.getState())) {
-                                for (String dest : currentModule.getDest()) {
+                                for (final String dest : currentModule.getDest()) {
                                     //    Utils.log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                     lowPulses++;
                                 }
                                 currentModule.setState(State.OFF);
                             } else if (State.OFF.equals(currentModule.getState())) {
-                                for (String dest : currentModule.getDest()) {
+                                for (final String dest : currentModule.getDest()) {
                                     //  Utils.log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.HIGH, checkAndGet(map, dest)));
                                     highPulses++;
@@ -123,9 +123,9 @@ public class SolutionPart01 {
                     case CONJUNCTION -> {
                         currentModule.getMemory().put(currentElement.lastModule().getUid(), currentElement.pulse());
 
-                        boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
+                        final boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
 
-                        for (String dest : currentModule.getDest()) {
+                        for (final String dest : currentModule.getDest()) {
                             // Utils.log("we add ("+dest+")");
                             if (remembersHighPulsesForAllInputs) {
                                 queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
@@ -161,9 +161,9 @@ public class SolutionPart01 {
         throw new IllegalStateException("Cannot find " + dest);
     }
 
-    private enum Pulse{LOW, HIGH}
+    private enum Pulse {LOW, HIGH}
 
-    private enum State{ON, OFF}
+    private enum State {ON, OFF}
 
     private enum Direction {
         FLIP_FLOP,

@@ -22,30 +22,29 @@ public class Part2Solution {
 
     }
 
-    public static void main(String[] args) {
-        //  final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19_test_01.txt";
-         final String filePath = System.getProperty("user.dir") + "/resources/days/day19/input_19.txt";
+    public static void main(final String[] args) {
+        //  final String filePath = System.getProperty("user.dir") + "/resources/year2023/day19/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day19/input.txt";
 
+        final String input = ImportUtils.readAsPlainString(filePath);
+        final String result = part2Solution(input);
 
-        String input = ImportUtils.readAsPlainString(filePath);
-      String result =   part2Solution(input);
-
-      Utils.log(result);
+        Utils.log(result);
     }
 
-    public static String part2Solution(String input) {
-        String[] inputParts = input.trim().split("\n\n");
+    public static String part2Solution(final String input) {
+        final String[] inputParts = input.trim().split("\n\n");
         long sum = 0L;
-        HashMap<String, Workflow> workflows = parseWorkflows(inputParts[0]);
-        HashMap<String, ArrayList<HashMap<Character, Range<Integer>>>> workflowQueue = new HashMap<>();
-        ArrayList<HashMap<Character, Range<Integer>>> acceptedRanges = new ArrayList<>();
+        final HashMap<String, Workflow> workflows = parseWorkflows(inputParts[0]);
+        final HashMap<String, ArrayList<HashMap<Character, Range<Integer>>>> workflowQueue = new HashMap<>();
+        final ArrayList<HashMap<Character, Range<Integer>>> acceptedRanges = new ArrayList<>();
         boolean hasUnprocessedRanges = true;
 
-        for (Workflow workflow: workflows.values()) {
+        for (final Workflow workflow : workflows.values()) {
             workflowQueue.put(workflow.name, new ArrayList<>());
         }
 
-        List<HashMap<Character, Range<Integer>>> partRanges = new ArrayList<>() {{
+        final List<HashMap<Character, Range<Integer>>> partRanges = new ArrayList<>() {{
             add(new HashMap<>() {{
                 put('x', Range.closed(1, 4000));
                 put('m', Range.closed(1, 4000));
@@ -59,23 +58,23 @@ public class Part2Solution {
         while (hasUnprocessedRanges) {
             hasUnprocessedRanges = false;
 
-            for (Map.Entry<String, ArrayList<HashMap<Character, Range<Integer>>>> work: workflowQueue.entrySet()) {
+            for (final Map.Entry<String, ArrayList<HashMap<Character, Range<Integer>>>> work : workflowQueue.entrySet()) {
                 if (work.getValue().isEmpty()) {
                     continue;
                 }
 
                 hasUnprocessedRanges = true;
 
-                Workflow workflow = workflows.get(work.getKey());
-                ArrayList<HashMap<Character, Range<Integer>>> ranges = work.getValue();
+                final Workflow workflow = workflows.get(work.getKey());
+                final ArrayList<HashMap<Character, Range<Integer>>> ranges = work.getValue();
                 workflowQueue.put(work.getKey(), new ArrayList<>());
 
                 nextRange:
-                for (HashMap<Character, Range<Integer>> range: ranges) {
-                    for (Condition condition: workflow.conditions) {
-                        Range<Integer> registerRange = range.get(condition.register);
-                        Range<Integer> conditionRange;
-                        Range<Integer> remainingRange;
+                for (final HashMap<Character, Range<Integer>> range : ranges) {
+                    for (final Condition condition : workflow.conditions) {
+                        final Range<Integer> registerRange = range.get(condition.register);
+                        final Range<Integer> conditionRange;
+                        final Range<Integer> remainingRange;
 
                         if (condition.operation == '<') {
                             conditionRange = Range.closed(1, condition.value - 1);
@@ -89,8 +88,8 @@ public class Part2Solution {
                             continue;
                         }
 
-                        Range<Integer> overlapping = registerRange.intersection(conditionRange);
-                        HashMap<Character, Range<Integer>> newRange = new HashMap<>(range);
+                        final Range<Integer> overlapping = registerRange.intersection(conditionRange);
+                        final HashMap<Character, Range<Integer>> newRange = new HashMap<>(range);
                         newRange.put(condition.register, overlapping);
 
                         if (condition.targetWorkflow.equals("A")) {
@@ -115,10 +114,10 @@ public class Part2Solution {
             }
         }
 
-        for (HashMap<Character, Range<Integer>> acceptedRange: acceptedRanges) {
+        for (final HashMap<Character, Range<Integer>> acceptedRange : acceptedRanges) {
             long rangeProduct = 1L;
-            for (Map.Entry<Character, Range<Integer>> es: acceptedRange.entrySet()) {
-                Range<Integer> range = es.getValue();
+            for (final Map.Entry<Character, Range<Integer>> es : acceptedRange.entrySet()) {
+                final Range<Integer> range = es.getValue();
                 rangeProduct *= range.upperEndpoint() - range.lowerEndpoint() + 1;
             }
 
@@ -128,18 +127,18 @@ public class Part2Solution {
         return String.valueOf(sum);
     }
 
-    private static HashMap<String, Workflow> parseWorkflows(String input) {
-        HashMap<String, Workflow> workflows = new HashMap<>();
-        String[] workflowsLines = input.split("\n");
+    private static HashMap<String, Workflow> parseWorkflows(final String input) {
+        final HashMap<String, Workflow> workflows = new HashMap<>();
+        final String[] workflowsLines = input.split("\n");
 
-        for (String workflowLine: workflowsLines) {
-            LinkedList<Condition> conditions = new LinkedList<>();
-            List<String> workflowHeaders = Regex.matchGroups("(\\w+)\\{(.*)\\}", workflowLine);
+        for (final String workflowLine : workflowsLines) {
+            final LinkedList<Condition> conditions = new LinkedList<>();
+            final List<String> workflowHeaders = Regex.matchGroups("(\\w+)\\{(.*)\\}", workflowLine);
             assert workflowHeaders != null;
-            String[] workflowParts = workflowHeaders.get(1).split(",");
+            final String[] workflowParts = workflowHeaders.get(1).split(",");
 
             for (int i = 0; i < workflowParts.length - 1; i++) {
-                List<String> c = Regex.matchGroups("(\\w+)([^\\w])([0-9]+):(\\w+)", workflowParts[i]);
+                final List<String> c = Regex.matchGroups("(\\w+)([^\\w])([0-9]+):(\\w+)", workflowParts[i]);
                 assert c != null;
                 conditions.add(new Condition(c.get(0).charAt(0), c.get(1).charAt(0), Integer.parseInt(c.get(2)), c.get(3)));
             }
@@ -153,6 +152,11 @@ public class Part2Solution {
         return workflows;
     }
 
-    record Condition(Character register, Character operation, Integer value, String targetWorkflow) {}
-    record Workflow(String name, List<Condition> conditions, String targetWorkflow) {}
+    record Condition(Character register, Character operation, Integer value, String targetWorkflow) {
+
+    }
+
+    record Workflow(String name, List<Condition> conditions, String targetWorkflow) {
+
+    }
 }

@@ -27,8 +27,8 @@ public class Draft_02 {
         private final int deltaY;
 
         Direction(
-                int deltaX,
-                int deltaY
+                final int deltaX,
+                final int deltaY
         ) {
             this.deltaX = deltaX;
             this.deltaY = deltaY;
@@ -61,40 +61,38 @@ public class Draft_02 {
 
     }
 
-    public static void main(String[] args) {
-         final String filePath = System.getProperty("user.dir") + "/resources/days/day18/input_18_test_01.txt";
-        // final String filePath = System.getProperty("user.dir") + "/resources/days/day18/input_18.txt";
+    public static void main(final String[] args) {
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day18/input_test_01.txt";
+        // final String filePath = System.getProperty("user.dir") + "/resources/year2023/day18/input.txt";
 
-        List<String> stringInstructions = ImportUtils.readAsList(filePath);
+        final List<String> stringInstructions = ImportUtils.readAsList(filePath);
 
-        List<Instruction> instructions = createInstructions(stringInstructions);
+        final List<Instruction> instructions = createInstructions(stringInstructions);
         calculatePart1(instructions);
-
 
 
     }
 
     private static void calculatePart1(final List<Instruction> instructions) {
 
-
-        Set<Coordinates> boundaries = createBoundaries(instructions);
+        final Set<Coordinates> boundaries = createBoundaries(instructions);
 
         // Startpunkt innerhalb des Gebiets (muss manuell festgelegt werden)
-        int startX = 3; // Ein Punkt innerhalb des Gebiets
-        int startY = 3; // Ein Punkt innerhalb des Gebiets
+        final int startX = 3; // Ein Punkt innerhalb des Gebiets
+        final int startY = 3; // Ein Punkt innerhalb des Gebiets
 
-        Set<Coordinates> visited = floodFillIterative(boundaries, startX, startY);
+        final Set<Coordinates> visited = floodFillIterative(boundaries, startX, startY);
 
-        long innerArea = countArea(visited);
-        long boundariesArea = boundaries.size();
+        final long innerArea = countArea(visited);
+        final long boundariesArea = boundaries.size();
 
-        Utils.log("Part 1: Inner Area: " + (innerArea+boundariesArea));
+        Utils.log("Part 1: Inner Area: " + (innerArea + boundariesArea));
     }
 
     private static List<Instruction> createInstructions(final List<String> stringInstructions) {
-        List<Instruction> instructions = new ArrayList<>();
-        for (String instruction : stringInstructions) {
-            String[] instructionArray = instruction.split(" ");
+        final List<Instruction> instructions = new ArrayList<>();
+        for (final String instruction : stringInstructions) {
+            final String[] instructionArray = instruction.split(" ");
             instructions.add(
                     new Instruction(
                             DIRECTION_MAP_PART_1.get(instructionArray[0]),
@@ -109,14 +107,14 @@ public class Draft_02 {
 
             final List<Instruction> instructions
     ) {
-        Set<Coordinates> boundaries = new HashSet<>();
+        final Set<Coordinates> boundaries = new HashSet<>();
         Coordinates current = new Coordinates(0, 0);
         boundaries.add(current);
 
-        for (Instruction instruction : instructions) {
+        for (final Instruction instruction : instructions) {
             for (int i = 0; i < instruction.meters(); i++) {
-                int newX = current.x + instruction.direction().deltaX;
-                int newY = current.y + instruction.direction().deltaY;
+                final int newX = current.x + instruction.direction().deltaX;
+                final int newY = current.y + instruction.direction().deltaY;
                 boundaries.add(new Coordinates(newX, newY));
                 current = new Coordinates(newX, newY);
             }
@@ -126,17 +124,17 @@ public class Draft_02 {
     }
 
     private static Set<Coordinates> floodFillIterative(
-            Set<Coordinates> boundaries,
-            int startX,
-            int startY
+            final Set<Coordinates> boundaries,
+            final int startX,
+            final int startY
     ) {
-        Set<Coordinates> visited = new HashSet<>();
+        final Set<Coordinates> visited = new HashSet<>();
 
-        Deque<Coordinates> stack = new ArrayDeque<>();
+        final Deque<Coordinates> stack = new ArrayDeque<>();
         stack.push(new Coordinates(startX, startY));
 
         while (!stack.isEmpty()) {
-            Coordinates p = stack.pop();
+            final Coordinates p = stack.pop();
 
             if (visited.contains(p) || boundaries.contains(p)) {
                 continue;
@@ -152,7 +150,7 @@ public class Draft_02 {
         return visited;
     }
 
-    private static long countArea(Set<Coordinates> visited) {
+    private static long countArea(final Set<Coordinates> visited) {
         return visited.size();
     }
 

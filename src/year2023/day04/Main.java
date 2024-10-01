@@ -8,9 +8,9 @@ import utils.ImportUtils;
 
 public class Main {
 
-    public static void main(String[] args) {
-        final String filePath = System.getProperty("user.dir") + "/resources/days/day04/input_05_test_01.txt";
-        //final String filePath = System.getProperty("user.dir") + "/resources/days/day04/input_05.txt";
+    public static void main(final String[] args) {
+        //final String filePath = System.getProperty("user.dir") + "/resources/year2023/day04/input_test_01.txt";
+        final String filePath = System.getProperty("user.dir") + "/resources/year2023/day04/input.txt";
 
         final List<String> inputList = ImportUtils.readAsList(filePath);
 
@@ -20,7 +20,7 @@ public class Main {
 
     }
 
-    private static List<LotteryCard> processLotteryCards(List<String> inputList) {
+    private static List<LotteryCard> processLotteryCards(final List<String> inputList) {
         return inputList.stream()
                 .map(Main::processCardString)
                 .collect(Collectors.toList());
@@ -29,36 +29,36 @@ public class Main {
     private static LotteryCard processCardString(final String line) {
 
         // Trenne nach dem ":"
-        String[] valuesSplittedAtColon = line.split(":");
-        String cardName = valuesSplittedAtColon[0].trim();
-        String cardValues = valuesSplittedAtColon[1].trim();
+        final String[] valuesSplittedAtColon = line.split(":");
+        final String cardName = valuesSplittedAtColon[0].trim();
+        final String cardValues = valuesSplittedAtColon[1].trim();
 
         //            System.out.println("Card Name: " + cardName);
         //            System.out.println("Card Values: " + cardValues);
 
         // Trenne nach dem "|"
-        String[] valuesSplittedAtPipe = cardValues.split("\\|");
-        String valuesBeforePipe = valuesSplittedAtPipe[0].trim();
-        String valuesAfterPipe = valuesSplittedAtPipe[1].trim();
+        final String[] valuesSplittedAtPipe = cardValues.split("\\|");
+        final String valuesBeforePipe = valuesSplittedAtPipe[0].trim();
+        final String valuesAfterPipe = valuesSplittedAtPipe[1].trim();
 
         //            System.out.println("Values Before Pipe: " + valuesBeforePipe);
         //            System.out.println("Values After Pipe: " + valuesAfterPipe);
 
         // Trenne jede einzelne Nummer.
-        List<String> winningNumbers = Arrays.stream(valuesBeforePipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
-        List<String> ourNumbers = Arrays.stream(valuesAfterPipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
+        final List<String> winningNumbers = Arrays.stream(valuesBeforePipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
+        final List<String> ourNumbers = Arrays.stream(valuesAfterPipe.split(" ")).map(String::trim).filter(s -> s != "").toList();
 
         //                        System.out.println("Winning Numbers: " + winningNumbers);
         //                        System.out.println("Our Numbers: " + ourNumbers);
 
         int matches = 0;
-        for (String numberToCheck : ourNumbers) {
+        for (final String numberToCheck : ourNumbers) {
             if (winningNumbers.contains(numberToCheck)) {
                 matches++;
             }
         }
 
-        int points = matches > 0 ? (int) Math.pow(2, matches - 1) : 0;
+        final int points = matches > 0 ? (int) Math.pow(2, matches - 1) : 0;
 
         System.out.println(cardName + ": " + matches + " matches => " + points + " points");
 
@@ -66,12 +66,12 @@ public class Main {
     }
 
     private static void printResults(final List<LotteryCard> lotteryCardList) {
-        int allPoints = lotteryCardList.stream().map(LotteryCard::getPoints).mapToInt(Integer::intValue).sum();
+        final int allPoints = lotteryCardList.stream().map(LotteryCard::getPoints).mapToInt(Integer::intValue).sum();
         System.out.println("Part 1: In sum we received " + allPoints + " points");
 
         // Part 2
         for (int i = 0; i < lotteryCardList.size(); i++) {
-            LotteryCard lotteryCard = lotteryCardList.get(i);
+            final LotteryCard lotteryCard = lotteryCardList.get(i);
             for (int h = 0; h < lotteryCard.getAmountOfCards(); h++) {
                 for (int j = 1; j <= lotteryCard.getMatches(); j++) {
                     lotteryCardList.get(i + j).increaseAmountOfCards();
@@ -81,7 +81,7 @@ public class Main {
 
         // Sum up all cards
         int allCards = 0;
-        for (LotteryCard lotteryCard : lotteryCardList) {
+        for (final LotteryCard lotteryCard : lotteryCardList) {
             System.out.println(lotteryCard.getCardName() + ": " + lotteryCard.getAmountOfCards());
             allCards += lotteryCard.getAmountOfCards();
         }
