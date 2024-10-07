@@ -10,6 +10,9 @@ import java.util.Map;
 import application.Day;
 import utils.ListUtils;
 
+/**
+ * See https://adventofcode.com/2023/day/1
+ */
 public class Day01 extends Day {
 
     //    private static final String FILE_PATH = "resources/main.resources.year2023/day01/input.txt";

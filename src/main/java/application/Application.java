@@ -10,6 +10,25 @@ import java.util.Map;
 import utils.ImportUtils;
 import year2023.day01.Day01;
 import year2023.day02.Day02;
+import year2023.day03.Day03;
+import year2023.day04.Day04;
+import year2023.day05.Day05;
+import year2023.day06.Day06;
+import year2023.day07.Day07;
+import year2023.day08.Day08;
+import year2023.day09.Day09;
+import year2023.day10.Day10;
+import year2023.day11.Day11;
+import year2023.day12.Day12;
+import year2023.day13.Day13;
+import year2023.day14.Day14;
+import year2023.day15.Day15;
+import year2023.day16.Day16;
+import year2023.day18.Day18;
+import year2023.day19.Day19;
+import year2023.day20.Day20;
+import year2023.day21.Day21;
+import year2023.day22.Day22;
 
 public class Application {
 
@@ -19,6 +38,27 @@ public class Application {
         DAYS = new HashMap<>();
         DAYS.put(1, new Day01());
         DAYS.put(2, new Day02());
+        DAYS.put(3, new Day03());
+        DAYS.put(4, new Day04());
+        DAYS.put(5, new Day05()); // Part 2 needs a lot of time
+        DAYS.put(6, new Day06());
+        DAYS.put(7, new Day07()); // Needs to be modified
+        DAYS.put(8, new Day08());
+        DAYS.put(9, new Day09());
+        DAYS.put(10, new Day10()); // Part 2 doesn't work
+        DAYS.put(11, new Day11());
+        DAYS.put(12, new Day12());
+        DAYS.put(13, new Day13());
+        DAYS.put(14, new Day14());
+        DAYS.put(15, new Day15());
+        DAYS.put(16, new Day16()); // Not correct at all
+        //        DAYS.put(17, new Day17());
+        DAYS.put(18, new Day18());
+        DAYS.put(19, new Day19());
+        DAYS.put(20, new Day20()); // Part 01 doesn't work
+        DAYS.put(21, new Day21());
+        DAYS.put(22, new Day22());
+
     }
 
     private static List<String> loadInput(final int day) {
@@ -51,6 +91,7 @@ public class Application {
         //            result = DAYS.get(day).part2(input);
         //        }
         //
+
         System.out.println("Solution Part 1: " + DAYS.get(day).part1(input));
         System.out.println("Solution Part 2: " + DAYS.get(day).part2(input));
 

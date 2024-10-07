@@ -8,10 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 public class ArrayUtils {
 
-    public static void log(final String logStatement) {
-        System.out.println(logStatement);
-    }
-
     public static String[][] transpose(final String[][] original) {
         final int numRows = original.length;
         final int numCols = original[0].length;
