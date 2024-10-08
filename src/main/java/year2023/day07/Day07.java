@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import application.Day;
 
@@ -13,16 +15,34 @@ import application.Day;
  */
 public class Day07 extends Day {
 
-    private static final Map<String, Integer> VALUE_MAP = initializeMap();
+    private enum Part {
+        PART1,
+        PART2
+    }
+
+    private static Map<String, Integer> VALUE_MAP;
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
     public String part1(final List<String> input) {
+        VALUE_MAP = initializeMap(Part.PART1);
+        return playPoker(input, Part.PART1);
+    }
 
+    @Override
+    public String part2(final List<String> input) {
+        VALUE_MAP = initializeMap(Part.PART2);
+        return playPoker(input, Part.PART2);
+    }
+
+    private String playPoker(
+            final List<String> input,
+            final Part part
+    ) {
         final List<HandBidPair> handBidPairs = new ArrayList<>();
         for (final String handAndBid : input) {
             final String[] handBidSplit = handAndBid.split(" ");
@@ -45,15 +65,17 @@ public class Day07 extends Day {
 
             final String hand = handBidPair.hand();
 
-            final List<LetterFrequency> letterFrequencies = calculateLetterFrequencies(hand);
+            List<LetterFrequency> letterFrequencies = calculateLetterFrequencies(hand);
 
-            // Part 2: Modify the hand to use J as Joker.
-            //            final Optional<LetterFrequency> maxLetterOpt = letterFrequencies.stream().filter(l -> !Objects.equals(l.letter(), "J"))
-            //                    .findFirst();
-            //            if (maxLetterOpt.isPresent()) {
-            //                final String modifiedHand = hand.replaceAll("J", maxLetterOpt.get().letter());
-            //                letterFrequencies = calculateLetterFrequencies(modifiedHand);
-            //            }
+            if (part == Part.PART2) { // Means ignoring for part 1
+                // Part 2: Modify the hand to use J as Joker.
+                final Optional<LetterFrequency> maxLetterOpt = letterFrequencies.stream().filter(l -> !Objects.equals(l.letter(), "J"))
+                        .findFirst();
+                if (maxLetterOpt.isPresent()) {
+                    final String modifiedHand = hand.replaceAll("J", maxLetterOpt.get().letter());
+                    letterFrequencies = calculateLetterFrequencies(modifiedHand);
+                }
+            }
 
             if (checkFiveOfAKind(letterFrequencies)) {
                 fiveOfAKindList.add(handBidPair);
@@ -105,11 +127,6 @@ public class Day07 extends Day {
         return String.valueOf(sum);
     }
 
-    @Override
-    public String part2(final List<String> input) {
-        return "";
-    }
-
     private static List<LetterFrequency> calculateLetterFrequencies(final String hand) {
 
         final Map<String, Integer> frequencyMap = new HashMap<>();
@@ -158,7 +175,7 @@ public class Day07 extends Day {
                 && letterFrequencies.get(1).frequency() != 2;
     }
 
-    private static Map<String, Integer> initializeMap() {
+    private static Map<String, Integer> initializeMap(final Part part) {
 
         final Map<String, Integer> valueMap = new HashMap<>();
         valueMap.put("J", 1);
@@ -171,7 +188,9 @@ public class Day07 extends Day {
         valueMap.put("8", 8);
         valueMap.put("9", 9);
         valueMap.put("T", 10);
-        // valueMap.put("J", 11);
+        if (part == Part.PART1) { // Means ignoring for part 2
+            valueMap.put("J", 11);
+        }
         valueMap.put("Q", 12);
         valueMap.put("K", 13);
         valueMap.put("A", 14);

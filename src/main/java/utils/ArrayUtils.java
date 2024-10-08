@@ -64,16 +64,6 @@ public class ArrayUtils {
         return copy;
     }
 
-    public static void printMap(final String[][] array) {
-        for (final String[] row : array) {
-            for (final String element : row) {
-                System.out.print(element);
-            }
-            System.out.println(" ");
-        }
-        System.out.println(" ");
-    }
-
     public static int sumUpInt(final List<Integer> list) {
         return list.stream().reduce(Integer::sum).orElse(0);
     }

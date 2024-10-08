@@ -1,7 +1,5 @@
 package year2023.day13;
 
-import static utils.ArrayUtils.printMap;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +44,7 @@ public class Day13 extends Day {
         final List<Reflection> verticalReflections = new ArrayList<>();
 
         for (final String[][] array : inputsAsArray) {
-            printMap(array);
+            logMap(array);
             final ReflectionTuple tuple = switch (part) {
                 case PART1 -> calculatePart1(array, null);
                 case PART2 -> calculatePart2(array);

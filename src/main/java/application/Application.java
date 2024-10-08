@@ -24,6 +24,7 @@ import year2023.day13.Day13;
 import year2023.day14.Day14;
 import year2023.day15.Day15;
 import year2023.day16.Day16;
+import year2023.day17.Day17;
 import year2023.day18.Day18;
 import year2023.day19.Day19;
 import year2023.day20.Day20;
@@ -42,22 +43,22 @@ public class Application {
         DAYS.put(4, new Day04());
         DAYS.put(5, new Day05()); // Part 2 needs a lot of time
         DAYS.put(6, new Day06());
-        DAYS.put(7, new Day07()); // Needs to be modified
+        DAYS.put(7, new Day07());
         DAYS.put(8, new Day08());
         DAYS.put(9, new Day09());
-        DAYS.put(10, new Day10()); // Part 2 doesn't work
+        DAYS.put(10, new Day10());
         DAYS.put(11, new Day11());
         DAYS.put(12, new Day12());
         DAYS.put(13, new Day13());
         DAYS.put(14, new Day14());
         DAYS.put(15, new Day15());
-        DAYS.put(16, new Day16()); // Not correct at all
-        //        DAYS.put(17, new Day17());
+        DAYS.put(16, new Day16());
+        DAYS.put(17, new Day17());
         DAYS.put(18, new Day18());
         DAYS.put(19, new Day19());
         DAYS.put(20, new Day20()); // Part 01 doesn't work
         DAYS.put(21, new Day21());
-        DAYS.put(22, new Day22());
+        DAYS.put(22, new Day22()); // Not existing
 
     }
 

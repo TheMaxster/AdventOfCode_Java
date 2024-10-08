@@ -29,7 +29,7 @@ public class Day14 extends Day {
         // Part 1
         final String[][] resultPart1 = calculatePart1(transposedImportArray);
         final String[][] retransposedImportArrayForPart1 = ArrayUtils.transpose(resultPart1);
-        ArrayUtils.printMap(retransposedImportArrayForPart1);
+        logMap(retransposedImportArrayForPart1);
         final int totalPointsForAllRowsPart1 = calculateTotalPointsForMap(retransposedImportArrayForPart1);
         log("Part 1: Total points: " + totalPointsForAllRowsPart1);
 
@@ -69,7 +69,7 @@ public class Day14 extends Day {
         }
 
         final String[][] retransposedImportArray = ArrayUtils.transpose(tmpArray);
-        ArrayUtils.printMap(retransposedImportArray);
+        logMap(retransposedImportArray);
 
         final int totalPointsForAllRowsPart2 = calculateTotalPointsForMap(retransposedImportArray);
         log("Part 2: Total points: " + totalPointsForAllRowsPart2);

@@ -17,7 +17,7 @@ public class Day16 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class Day16 extends Day {
         final Set<Coordinates> energizedTiles = processMap(startBeamPart1, map);
 
         final String[][] energizedMap = generateEnergizedMap(map, energizedTiles);
-        ArrayUtils.printMap(energizedMap);
+        logMap(energizedMap);
 
         log("Part 1: Total amount of energized tiles is " + energizedTiles.size());
         return String.valueOf(energizedTiles.size());
@@ -40,15 +40,15 @@ public class Day16 extends Day {
         final String[][] map = ImportUtils.convertListToArray(input);
 
         // Part 2
-        int maxAmountOfEnegerizedTiles = 0;
+        int maxAmountOfEnergizedTiles = 0;
 
         // Process west end of map.
         for (int i = 0; i < map.length; i++) {
             final Beam startBeamPart2 = new Beam(new Coordinates(i, 0), Direction.EAST);
             log(startBeamPart2.toString());
             final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
-            if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
-                maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
+            if (amountOfEnergizedTiles > maxAmountOfEnergizedTiles) {
+                maxAmountOfEnergizedTiles = amountOfEnergizedTiles;
             }
         }
 
@@ -57,8 +57,8 @@ public class Day16 extends Day {
             final Beam startBeamPart2 = new Beam(new Coordinates(i, map[i].length - 1), Direction.WEST);
             log(startBeamPart2.toString());
             final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
-            if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
-                maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
+            if (amountOfEnergizedTiles > maxAmountOfEnergizedTiles) {
+                maxAmountOfEnergizedTiles = amountOfEnergizedTiles;
             }
         }
 
@@ -67,8 +67,8 @@ public class Day16 extends Day {
             final Beam startBeamPart2 = new Beam(new Coordinates(0, i), Direction.SOUTH);
             log(startBeamPart2.toString());
             final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
-            if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
-                maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
+            if (amountOfEnergizedTiles > maxAmountOfEnergizedTiles) {
+                maxAmountOfEnergizedTiles = amountOfEnergizedTiles;
             }
         }
 
@@ -77,21 +77,14 @@ public class Day16 extends Day {
             final Beam startBeamPart2 = new Beam(new Coordinates(map.length - 1, i), Direction.NORTH);
             log(startBeamPart2.toString());
             final int amountOfEnergizedTiles = processMap(startBeamPart2, map).size();
-            if (amountOfEnergizedTiles > maxAmountOfEnegerizedTiles) {
-                maxAmountOfEnegerizedTiles = amountOfEnergizedTiles;
+            if (amountOfEnergizedTiles > maxAmountOfEnergizedTiles) {
+                maxAmountOfEnergizedTiles = amountOfEnergizedTiles;
             }
         }
 
-        log("Part 2: Max amount of energized tiles is " + maxAmountOfEnegerizedTiles);
-        return String.valueOf(maxAmountOfEnegerizedTiles);
+        log("Part 2: Max amount of energized tiles is " + maxAmountOfEnergizedTiles);
+        return String.valueOf(maxAmountOfEnergizedTiles);
     }
-
-    //    public static void main(final String[] args) {
-    //        // final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day16/input_test_01.txt";
-    //        final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day16/input.txt";
-    //        final String[][] map = ImportUtils.readAsArray(filePath);
-    //
-    //    }
 
     private static Set<Coordinates> processMap(
             final Beam startBeam,
@@ -113,8 +106,6 @@ public class Day16 extends Day {
                         queue.add(new Beam(nextCoords, direction));
                     }
                 }
-
-
             }
         }
 
@@ -206,12 +197,16 @@ public class Day16 extends Day {
         switch (direction) {
             case NORTH:
                 nextX -= 1;
+                break;
             case SOUTH:
                 nextX += 1;
+                break;
             case EAST:
                 nextY += 1;
+                break;
             case WEST:
                 nextY -= 1;
+                break;
         }
 
         if (nextX >= 0 && nextX < maxX && nextY >= 0 && nextY < maxY) {

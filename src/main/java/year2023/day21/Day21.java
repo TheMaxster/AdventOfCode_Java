@@ -145,7 +145,7 @@ public class Day21 extends Day {
                     }
                 }
             }
-            ArrayUtils.printMap(currentGrid);
+            logMap(currentGrid);
 
         }
 

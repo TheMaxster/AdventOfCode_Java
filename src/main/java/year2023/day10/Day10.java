@@ -74,15 +74,12 @@ public class Day10 extends Day {
 
     @Override
     public String part1(final List<String> input) {
-        final String[][] part1Map = ImportUtils.convertListToArray(input);
+        final String[][] map = ImportUtils.convertListToArray(input);
 
-        TOP_TO_BOTTOM = part1Map.length;
-        LEFT_TO_RIGHT = part1Map[0].length;
+        TOP_TO_BOTTOM = map.length;
+        LEFT_TO_RIGHT = map[0].length;
 
-        final Coordinate start = getStartCoordinate(part1Map);
-        log("Start is: " + start.toString());
-
-        final Set<Coordinate> visited = goFurther(start, part1Map);
+        final Set<Coordinate> visited = getCoordinates(map);
 
         final long validVisits = visited.stream().filter(Coordinate::valid).count();
 
@@ -92,65 +89,48 @@ public class Day10 extends Day {
         // ---------------------------------------------------------------------------------------------------------------
         // Only for visualisation.
 
-        final String[][] modifiedPart1Map = part1Map.clone();
+        final String[][] modifiedPart1Map = map.clone();
 
         for (final Coordinate coordinate : visited) {
             if (coordinate.valid()) {
                 modifiedPart1Map[coordinate.row()][coordinate.column()] = "X";
             }
         }
-        printStringArray(modifiedPart1Map);
+        logMap(modifiedPart1Map);
 
         // ---------------------------------------------------------------------------------------------------------------
 
         return String.valueOf(validVisits / 2);
     }
 
+    private Set<Coordinate> getCoordinates(final String[][] map) {
+        final Coordinate start = getStartCoordinate(map);
+        log("Start is: " + start.toString());
+        return goFurther(start, map);
+    }
+
     @Override
     public String part2(final List<String> input) {
-        final String[][] part1Map = ImportUtils.convertListToArray(input);
+        final String[][] map = ImportUtils.convertListToArray(input);
 
-        TOP_TO_BOTTOM = part1Map.length;
-        LEFT_TO_RIGHT = part1Map[0].length;
+        TOP_TO_BOTTOM = map.length;
+        LEFT_TO_RIGHT = map[0].length;
 
-        final Coordinate start = getStartCoordinate(part1Map);
-        log("Start is: " + start.toString());
+        final Coordinate startCoordinate = getStartCoordinate(map);
+        log("Start is: " + startCoordinate.toString());
 
-        final Set<Coordinate> visited = goFurther(start, part1Map);
+        final Set<Coordinate> visited = goFurther(startCoordinate, map);
 
-        final long validVisits = visited.stream().filter(Coordinate::valid).count();
-
-        log("Solution Part 1: We run in the circle with nodes: " + validVisits);
-        log("So the farthest part is the half: " + validVisits / 2);
-
-        // ---------------------------------------------------------------------------------------------------------------
-        // Only for visualisation.
-
-        final String[][] modifiedPart1Map = part1Map.clone();
-
-        for (final Coordinate coordinate : visited) {
-            if (coordinate.valid()) {
-                modifiedPart1Map[coordinate.row()][coordinate.column()] = "X";
-            }
-        }
-        printStringArray(modifiedPart1Map);
-
-        // ---------------------------------------------------------------------------------------------------------------
-
-        // Part 2
-        final String[][] part2Map = part1Map.clone();
-
-        final Coordinate startCoordinate = getStartCoordinate(part2Map);
-        transformS(part2Map, startCoordinate.row(), startCoordinate.column());
+        transformS(map, startCoordinate.row(), startCoordinate.column());
 
         // Print map with replaced "S".
-        printStringArray(part2Map);
+        logMap(map);
 
         // Ray casting algorithm is used here.
         // We count the number of broder crossings if we go from our point to the farthest point on the left.
         // If the number of crossings is even, our point is outside the polygon.
         // If the number of crossings is odd, our point is inside the polygon.
-        final List<Coordinate> innerInvalidVisits = findInnerInvalidVisits(part1Map, visited);
+        final List<Coordinate> innerInvalidVisits = findInnerInvalidVisits(map, visited);
         log("Solution Part 2: Found inner tiles: " + innerInvalidVisits.size());
 
         return String.valueOf(innerInvalidVisits.size());
@@ -255,18 +235,6 @@ public class Day10 extends Day {
             }
         }
         return false;
-
-
-    }
-
-
-    private static void printStringArray(final String[][] array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                System.out.print(array[i][j] + " ");
-            }
-            System.out.println();
-        }
     }
 
     private Set<Coordinate> goFurther(
