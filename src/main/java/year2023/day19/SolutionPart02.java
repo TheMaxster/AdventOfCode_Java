@@ -8,28 +8,21 @@ import java.util.Map;
 
 import com.google.common.collect.Range;
 
+import application.DaySolution;
 import main.java.utils.Regex;
 import utils.ImportUtils;
 
-public class SolutionPart02 {
+public class SolutionPart02 extends DaySolution {
 
-    private record Rule(String letter, String operator, int value, String consequence) {
-
+    @Override
+    public Boolean getLoggingEnabled() {
+        return false;
     }
 
-    private record Part(int x, int m, int a, int s) {
-
-    }
-
+    @Override
     public String calculate(final List<String> input) {
-        //  final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day19/input_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/src/main/resources/year2023/day19/input.txt";
-
-        final String inputString = ImportUtils.readAsPlainString(filePath);
-        //        final String inputString = ImportUtils.convertListToString(input);
-        final String result = part2Solution(inputString);
-
-        return result;
+        final String inputString = ImportUtils.convertListToString(input);
+        return part2Solution(inputString);
     }
 
     public static String part2Solution(final String input) {
@@ -157,6 +150,14 @@ public class SolutionPart02 {
     }
 
     record Workflow(String name, List<Condition> conditions, String targetWorkflow) {
+
+    }
+
+    private record Rule(String letter, String operator, int value, String consequence) {
+
+    }
+
+    private record Part(int x, int m, int a, int s) {
 
     }
 }

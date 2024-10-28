@@ -9,15 +9,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SolutionPart02 {
+import application.DaySolution;
+import lombok.Data;
 
-    public static String calculate(final List<String> input) {
-        // final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day20/input_test_01.txt";
-        //  final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day20/input_test_02.txt";
-        //        final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day20/input.txt";
+public class SolutionPart02 extends DaySolution {
 
-        //        final List<String> input = ImportUtils.readAsList(filePath);
+    @Override
+    public Boolean getLoggingEnabled() {
+        return false;
+    }
 
+    @Override
+    public String calculate(final List<String> input) {
         final List<Module> modules = new ArrayList<>();
 
         for (final String configString : input) {
@@ -78,7 +81,7 @@ public class SolutionPart02 {
 
         for (int i = 1; i <= 10000; i++) {
 
-            System.out.println("----------------------------------------------------");
+            log("----------------------------------------------------");
 
             final LinkedList<QueueElement> queue = new LinkedList<>();
             queue.push(new QueueElement(null, null, checkAndGet(map, "broadcaster")));
@@ -88,7 +91,7 @@ public class SolutionPart02 {
                 final QueueElement currentElement = queue.poll();
                 final Module currentModule = currentElement.currentModule();
 
-                System.out.println("send " + currentElement.pulse() + " to " + currentModule.getUid());
+                log("send " + currentElement.pulse() + " to " + currentModule.getUid());
 
                 modificationForPart2(currentElement, lastIncomingWasHigh, i);
 
@@ -103,14 +106,14 @@ public class SolutionPart02 {
                         if (Pulse.LOW.equals(currentElement.pulse)) {
                             if (State.ON.equals(currentModule.getState())) {
                                 for (final String dest : currentModule.getDest()) {
-                                    //    Utils.log("we add ("+dest+")");
+                                    //    log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                     lowPulses++;
                                 }
                                 currentModule.setState(State.OFF);
                             } else if (State.OFF.equals(currentModule.getState())) {
                                 for (final String dest : currentModule.getDest()) {
-                                    //  Utils.log("we add ("+dest+")");
+                                    //  log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.HIGH, checkAndGet(map, dest)));
                                     highPulses++;
                                 }
@@ -124,7 +127,7 @@ public class SolutionPart02 {
                         final boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
 
                         for (final String dest : currentModule.getDest()) {
-                            // Utils.log("we add ("+dest+")");
+                            // log("we add ("+dest+")");
                             if (remembersHighPulsesForAllInputs) {
                                 queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                 lowPulses++;
@@ -143,14 +146,14 @@ public class SolutionPart02 {
 
         }
 
-        System.out.println("Low Pulses: " + lowPulses);
-        System.out.println("High Pulses: " + highPulses);
-        System.out.println("Solution for Part 1: Product: " + lowPulses * highPulses);
-        System.out.println(" ");
-        System.out.println("Solution for Part 2: " + lastIncomingWasHigh.toString());
+        log("Low Pulses: " + lowPulses);
+        log("High Pulses: " + highPulses);
+        log("Solution for Part 1: Product: " + lowPulses * highPulses);
+        log(" ");
+        log("Solution for Part 2: " + lastIncomingWasHigh.toString());
         final long leastCommonMultiple = lastIncomingWasHigh.values().stream().mapToLong(list -> list.get(0)).reduce((a, b) -> a * b)
                 .orElseGet(() -> 0L);
-        System.out.println(
+        log(
                 "Comment for Part 2: The solution has to be a least common multiple of all the first inputs from the HashSet. In our case: "
                         + leastCommonMultiple);
         return String.valueOf(leastCommonMultiple);
@@ -206,50 +209,10 @@ public class SolutionPart02 {
         OUTPUT;
     }
 
+    @Data
     private static class Module {
 
         String uid;
-
-        public String getUid() {
-            return uid;
-        }
-
-        public void setUid(final String uid) {
-            this.uid = uid;
-        }
-
-        public List<String> getDest() {
-            return dest;
-        }
-
-        public void setDest(final List<String> dest) {
-            this.dest = dest;
-        }
-
-        public Direction getType() {
-            return type;
-        }
-
-        public void setType(final Direction type) {
-            this.type = type;
-        }
-
-        public State getState() {
-            return state;
-        }
-
-        public void setState(final State state) {
-            this.state = state;
-        }
-
-        public Map<String, Pulse> getMemory() {
-            return memory;
-        }
-
-        public void setMemory(final Map<String, Pulse> memory) {
-            this.memory = memory;
-        }
-
         List<String> dest;
         Direction type;
         State state; // on and off

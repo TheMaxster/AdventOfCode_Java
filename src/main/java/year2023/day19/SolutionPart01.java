@@ -9,8 +9,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class SolutionPart01 {
+import application.DaySolution;
 
+public class SolutionPart01 extends DaySolution {
+
+    @Override
+    public Boolean getLoggingEnabled() {
+        return false;
+    }
+
+    @Override
     public String calculate(final List<String> input) {
         final List<Part> partsList = new ArrayList<>();
         final Map<String, List<Rule>> workflows = new HashMap<>();
@@ -34,7 +42,7 @@ public class SolutionPart01 {
         }
 
         for (final Map.Entry<String, List<Rule>> entry : workflows.entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue().toString());
+            log(entry.getKey() + " " + entry.getValue().toString());
         }
 
         final Set<Part> acceptedParts = new HashSet<>();
@@ -62,7 +70,7 @@ public class SolutionPart01 {
         }
 
         final int totalSum = acceptedParts.stream().mapToInt(Part::getPartSum).sum();
-        System.out.println("Total sum: " + totalSum);
+        log("Total sum: " + totalSum);
         return String.valueOf(totalSum);
     }
 
@@ -126,13 +134,13 @@ public class SolutionPart01 {
         };
     }
 
-    private static List<Rule> getNewRules(
+    private List<Rule> getNewRules(
             final Rule rule,
             final Part part,
             final Set<Part> acceptedParts,
             final Map<String, List<Rule>> workflows
     ) {
-        System.out.println(part + " -> " + rule.consequence);
+        log(part + " -> " + rule.consequence);
         if (Objects.equals(rule.consequence, "A")) {
             acceptedParts.add(part);
             return Collections.emptyList();
@@ -142,7 +150,6 @@ public class SolutionPart01 {
             return workflows.get(rule.consequence);
         }
     }
-
 
     private record Rule(String letter, String operator, int value, String consequence) {
 

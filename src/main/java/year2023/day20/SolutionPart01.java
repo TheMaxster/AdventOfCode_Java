@@ -8,15 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import application.DaySolution;
+import lombok.Data;
 
-public class SolutionPart01 {
 
+public class SolutionPart01 extends DaySolution {
+
+    @Override
+    public Boolean getLoggingEnabled() {
+        return false;
+    }
+
+    @Override
     public String calculate(final List<String> input) {
-        // final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day20/input_test_01.txt";
-        //  final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day20/input_test_02.txt";
-        //        final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day20/input.txt";
-
-        //        final List<String> input = ImportUtils.readAsList(filePath);
 
         final List<Module> modules = new ArrayList<>();
 
@@ -80,7 +84,7 @@ public class SolutionPart01 {
 
         for (int i = 0; i < 1000; i++) {
 
-            System.out.println("----------------------------------------------------");
+            log("----------------------------------------------------");
 
             final LinkedList<QueueElement> queue = new LinkedList<>();
             queue.push(new QueueElement(null, null, checkAndGet(map, "broadcaster")));
@@ -90,7 +94,7 @@ public class SolutionPart01 {
                 final QueueElement currentElement = queue.poll();
                 final Module currentModule = currentElement.currentModule();
 
-                System.out.println("send " + currentElement.pulse() + " to " + currentModule.getUid());
+                log("send " + currentElement.pulse() + " to " + currentModule.getUid());
 
                 switch (currentModule.getType()) {
                     case BROADCAST -> {
@@ -103,14 +107,14 @@ public class SolutionPart01 {
                         if (Pulse.LOW.equals(currentElement.pulse)) {
                             if (State.ON.equals(currentModule.getState())) {
                                 for (final String dest : currentModule.getDest()) {
-                                    //    Utils.System.out.println("we add ("+dest+")");
+                                    //    log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                     lowPulses++;
                                 }
                                 currentModule.setState(State.OFF);
                             } else if (State.OFF.equals(currentModule.getState())) {
                                 for (final String dest : currentModule.getDest()) {
-                                    //  Utils.System.out.println("we add ("+dest+")");
+                                    //  log("we add ("+dest+")");
                                     queue.addLast(new QueueElement(currentModule, Pulse.HIGH, checkAndGet(map, dest)));
                                     highPulses++;
                                 }
@@ -124,7 +128,7 @@ public class SolutionPart01 {
                         final boolean remembersHighPulsesForAllInputs = !currentModule.getMemory().containsValue(Pulse.LOW);
 
                         for (final String dest : currentModule.getDest()) {
-                            // Utils.System.out.println("we add ("+dest+")");
+                            // log("we add ("+dest+")");
                             if (remembersHighPulsesForAllInputs) {
                                 queue.addLast(new QueueElement(currentModule, Pulse.LOW, checkAndGet(map, dest)));
                                 lowPulses++;
@@ -143,9 +147,9 @@ public class SolutionPart01 {
 
         }
 
-        System.out.println("Low Pulses: " + lowPulses);
-        System.out.println("High Pulses: " + highPulses);
-        System.out.println("Product: " + lowPulses * highPulses);
+        log("Low Pulses: " + lowPulses);
+        log("High Pulses: " + highPulses);
+        log("Product: " + lowPulses * highPulses);
 
         return String.valueOf(lowPulses * highPulses);
 
@@ -172,50 +176,10 @@ public class SolutionPart01 {
         OUTPUT;
     }
 
+    @Data
     private static class Module {
 
         String uid;
-
-        public String getUid() {
-            return uid;
-        }
-
-        public void setUid(final String uid) {
-            this.uid = uid;
-        }
-
-        public List<String> getDest() {
-            return dest;
-        }
-
-        public void setDest(final List<String> dest) {
-            this.dest = dest;
-        }
-
-        public Direction getType() {
-            return type;
-        }
-
-        public void setType(final Direction type) {
-            this.type = type;
-        }
-
-        public State getState() {
-            return state;
-        }
-
-        public void setState(final State state) {
-            this.state = state;
-        }
-
-        public Map<String, Pulse> getMemory() {
-            return memory;
-        }
-
-        public void setMemory(final Map<String, Pulse> memory) {
-            this.memory = memory;
-        }
-
         List<String> dest;
         Direction type;
         State state; // on and off

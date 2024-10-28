@@ -6,6 +6,11 @@ import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+/**
+ * The ListUtils for the AoC setup.
+ *
+ * @author mglembock
+ */
 public class ListUtils {
 
     public static Integer sumUpInt(final List<Integer> list) {

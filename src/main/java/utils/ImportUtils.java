@@ -9,8 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The ImportUtils for the AoC setup.
+ *
+ * @author mglembock
+ */
 public class ImportUtils {
-
 
     public static String readAsPlainString(final String filePath) {
         try {
@@ -68,18 +72,19 @@ public class ImportUtils {
     }
 
     public static Scanner convertListToScanner(final List<String> list) {
-        // Füge alle Elemente der Liste zu einem einzigen String zusammen, getrennt durch Zeilenumbrüche
+        // Merge all elements of the list into a single string, separated by line breaks
         final StringBuilder sb = new StringBuilder();
         for (final String line : list) {
             sb.append(line).append(System.lineSeparator());
         }
 
-        // Erstelle einen Scanner, der diesen String als Eingabequelle verwendet
+        // Create a scanner that uses this string as input source
         return new Scanner(sb.toString());
     }
 
     public static String convertListToString(final List<String> list) {
-        return String.join(System.lineSeparator(), list);
+        return String.join(System.lineSeparator(), list)
+                .replace("\r", ""); // Replace carriage returns
     }
 
 }
