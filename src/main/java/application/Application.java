@@ -33,33 +33,60 @@ import year2023.day22.Day22;
 
 public class Application {
 
-    private static final Map<Integer, Day> DAYS;
+    private static final Map<Integer, Day> DAYS2023;
+    private static final Map<Integer, Day> DAYS2024;
+    private static final Map<Integer, Map<Integer, Day>> YEARS;
 
     static {
-        DAYS = new HashMap<>();
-        DAYS.put(1, new Day01());
-        DAYS.put(2, new Day02());
-        DAYS.put(3, new Day03());
-        DAYS.put(4, new Day04());
-        DAYS.put(5, new Day05()); // Part 2 needs a lot of time
-        DAYS.put(6, new Day06());
-        DAYS.put(7, new Day07());
-        DAYS.put(8, new Day08());
-        DAYS.put(9, new Day09());
-        DAYS.put(10, new Day10());
-        DAYS.put(11, new Day11());
-        DAYS.put(12, new Day12());
-        DAYS.put(13, new Day13());
-        DAYS.put(14, new Day14());
-        DAYS.put(15, new Day15());
-        DAYS.put(16, new Day16());
-        DAYS.put(17, new Day17());
-        DAYS.put(18, new Day18());
-        DAYS.put(19, new Day19());
-        DAYS.put(20, new Day20()); // Part 01 doesn't work
-        DAYS.put(21, new Day21());
-        DAYS.put(22, new Day22()); // Not existing
+        DAYS2023 = new HashMap<>();
+        DAYS2023.put(1, new Day01());
+        DAYS2023.put(2, new Day02());
+        DAYS2023.put(3, new Day03());
+        DAYS2023.put(4, new Day04());
+        DAYS2023.put(5, new Day05()); // Part 2 needs a lot of time
+        DAYS2023.put(6, new Day06());
+        DAYS2023.put(7, new Day07());
+        DAYS2023.put(8, new Day08());
+        DAYS2023.put(9, new Day09());
+        DAYS2023.put(10, new Day10());
+        DAYS2023.put(11, new Day11());
+        DAYS2023.put(12, new Day12());
+        DAYS2023.put(13, new Day13());
+        DAYS2023.put(14, new Day14());
+        DAYS2023.put(15, new Day15());
+        DAYS2023.put(16, new Day16());
+        DAYS2023.put(17, new Day17());
+        DAYS2023.put(18, new Day18());
+        DAYS2023.put(19, new Day19());
+        DAYS2023.put(20, new Day20()); // Part 01 doesn't work
+        DAYS2023.put(21, new Day21());
+        DAYS2023.put(22, new Day22()); // Not existing
 
+        DAYS2024 = new HashMap<>();
+        DAYS2024.put(1, new year2024.day01.Day01());
+        DAYS2024.put(2, new year2024.day02.Day02());
+        DAYS2024.put(3, new year2024.day03.Day03());
+        DAYS2024.put(4, new year2024.day04.Day04());
+        DAYS2024.put(5, new year2024.day05.Day05());
+        DAYS2024.put(6, new year2024.day06.Day06());
+        DAYS2024.put(7, new year2024.day07.Day07());
+        DAYS2024.put(8, new year2024.day08.Day08());
+        DAYS2024.put(9, new year2024.day09.Day09());
+        DAYS2024.put(10, new year2024.day10.Day10());
+        DAYS2024.put(11, new year2024.day11.Day11());
+        DAYS2024.put(12, new year2024.day12.Day12());
+        DAYS2024.put(13, new year2024.day13.Day13());
+        DAYS2024.put(14, new year2024.day14.Day14());
+        DAYS2024.put(15, new year2024.day15.Day15());
+        DAYS2024.put(16, new year2024.day16.Day16());
+        DAYS2024.put(17, new year2024.day17.Day17());
+        DAYS2024.put(18, new year2024.day18.Day18());
+        DAYS2024.put(19, new year2024.day19.Day19());
+        DAYS2024.put(20, new year2024.day20.Day20());
+
+        YEARS = new HashMap<>();
+        YEARS.put(2023, DAYS2023);
+        YEARS.put(2024, DAYS2024);
     }
 
     private static List<String> loadInput(final int day) {
@@ -73,9 +100,14 @@ public class Application {
     }
 
     public static void main(final String[] args) {
+        int year = 2023;
+        if (args.length != 0) {
+            year = Integer.parseInt(args[0]);
+        }
+
         int day = 1;
         if (args.length != 0) {
-            day = Integer.parseInt(args[0]);
+            day = Integer.parseInt(args[1]);
         }
 
         //        int part = 1;
@@ -93,8 +125,9 @@ public class Application {
         //        }
         //
 
-        System.out.println("Solution Part 1: " + DAYS.get(day).part1(input));
-        System.out.println("Solution Part 2: " + DAYS.get(day).part2(input));
+        System.out.println("Executing: " + year + "-" + day);
+        System.out.println("Solution Part 1: " + YEARS.get(year).get(day).part1(input));
+        System.out.println("Solution Part 2: " + YEARS.get(year).get(day).part2(input));
 
     }
 }
