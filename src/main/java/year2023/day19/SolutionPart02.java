@@ -9,8 +9,8 @@ import java.util.Map;
 import com.google.common.collect.Range;
 
 import application.DaySolution;
-import main.java.utils.Regex;
 import utils.ImportUtils;
+import utils.RegexUtils;
 
 public class SolutionPart02 extends DaySolution {
 
@@ -126,12 +126,12 @@ public class SolutionPart02 extends DaySolution {
 
         for (final String workflowLine : workflowsLines) {
             final LinkedList<Condition> conditions = new LinkedList<>();
-            final List<String> workflowHeaders = Regex.matchGroups("(\\w+)\\{(.*)\\}", workflowLine);
+            final List<String> workflowHeaders = RegexUtils.matchGroups("(\\w+)\\{(.*)\\}", workflowLine);
             assert workflowHeaders != null;
             final String[] workflowParts = workflowHeaders.get(1).split(",");
 
             for (int i = 0; i < workflowParts.length - 1; i++) {
-                final List<String> c = Regex.matchGroups("(\\w+)([^\\w])([0-9]+):(\\w+)", workflowParts[i]);
+                final List<String> c = RegexUtils.matchGroups("(\\w+)([^\\w])([0-9]+):(\\w+)", workflowParts[i]);
                 assert c != null;
                 conditions.add(new Condition(c.get(0).charAt(0), c.get(1).charAt(0), Integer.parseInt(c.get(2)), c.get(3)));
             }
