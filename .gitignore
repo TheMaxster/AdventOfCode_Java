@@ -10,3 +10,6 @@ out/
 
 ### Log files ###
 *.log
+
+# General
+/target/
