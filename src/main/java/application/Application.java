@@ -100,30 +100,10 @@ public class Application {
     }
 
     public static void main(final String[] args) {
-        int year = 2023;
-        if (args.length != 0) {
-            year = Integer.parseInt(args[0]);
-        }
-
-        int day = 1;
-        if (args.length != 0) {
-            day = Integer.parseInt(args[1]);
-        }
-
-        //        int part = 1;
-        //        if (args.length > 1) {
-        //            part = Integer.parseInt(args[1]);
-        //        }
+        final int year = args.length != 0 ? Integer.parseInt(args[0]) : 2023;
+        final int day = args.length != 0 ? Integer.parseInt(args[1]) : 1;
 
         final List<String> input = loadInput(day);
-
-        //        final String result;
-        //        if (part == 1) {
-        //            result = DAYS.get(day).part1(input);
-        //        } else {
-        //            result = DAYS.get(day).part2(input);
-        //        }
-        //
 
         System.out.println("Executing: " + year + "-" + day);
         System.out.println("Solution Part 1: " + YEARS.get(year).get(day).part1(input));
