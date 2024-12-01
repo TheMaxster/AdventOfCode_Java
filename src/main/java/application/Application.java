@@ -89,12 +89,15 @@ public class Application {
         YEARS.put(2024, DAYS2024);
     }
 
-    private static List<String> loadInput(final int day) {
+    private static List<String> loadInput(
+            final int day,
+            final int year
+    ) {
         String paddedDay = String.valueOf(day);
         if (day < 10) {
             paddedDay = "0" + day;
         }
-        final String filePath = "src/main/resources/year2023/day" + paddedDay + "/input.txt";
+        final String filePath = "src/main/resources/year" + year + "/day" + paddedDay + "/input.txt";
 
         return ImportUtils.readAsList(filePath);
     }
@@ -103,7 +106,7 @@ public class Application {
         final int year = args.length != 0 ? Integer.parseInt(args[0]) : 2023;
         final int day = args.length != 0 ? Integer.parseInt(args[1]) : 1;
 
-        final List<String> input = loadInput(day);
+        final List<String> input = loadInput(day, year);
 
         System.out.println("Executing: " + year + "-" + day);
         System.out.println("Solution Part 1: " + YEARS.get(year).get(day).part1(input));
