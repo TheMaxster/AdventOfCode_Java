@@ -85,7 +85,7 @@ public class Day02 extends Day {
         int subIndex = 0;
         for (int i = 0; i < array.length; i++) {
             if (i == skipIndex) {
-                continue; // Überspringe das Element
+                continue;
             }
             subArray[subIndex++] = array[i];
         }
