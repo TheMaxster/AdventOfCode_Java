@@ -71,6 +71,23 @@ public class ImportUtils {
         return array;
     }
 
+    public static Integer[][] convertListToIntArray(
+            final List<String> input,
+            final String delimiter
+    ) {
+        final Integer[][] result = new Integer[input.size()][];
+
+        for (int i = 0; i < input.size(); i++) {
+            final String[] parts = input.get(i).split(delimiter);
+
+            result[i] = new Integer[parts.length];
+            for (int j = 0; j < parts.length; j++) {
+                result[i][j] = Integer.parseInt(parts[j].trim());
+            }
+        }
+        return result;
+    }
+
     public static Scanner convertListToScanner(final List<String> list) {
         // Merge all elements of the list into a single string, separated by line breaks
         final StringBuilder sb = new StringBuilder();
