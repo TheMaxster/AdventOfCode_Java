@@ -9,7 +9,7 @@ import lombok.Data;
 import utils.ImportUtils;
 
 /**
- * See https://adventofcode.com/2024/day/1
+ * See https://adventofcode.com/2024/day/4
  */
 public class Day04 extends Day {
 
@@ -59,7 +59,7 @@ public class Day04 extends Day {
             ) {
                 return 1;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (final ArrayIndexOutOfBoundsException e) {
             // Nothing to do here.
         }
         return 0;
@@ -123,7 +123,7 @@ public class Day04 extends Day {
             ) {
                 return 1;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (final ArrayIndexOutOfBoundsException e) {
             // Nothing to do here.
         }
         return 0;

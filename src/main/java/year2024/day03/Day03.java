@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import application.Day;
 
 /**
- * See https://adventofcode.com/2024/day/1
+ * See https://adventofcode.com/2024/day/3
  */
 public class Day03 extends Day {
 
