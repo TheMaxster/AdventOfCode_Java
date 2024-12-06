@@ -1,10 +1,7 @@
 package utils;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * The ArrayUtils for the AoC setup.
@@ -69,14 +66,19 @@ public class ArrayUtils {
         return copy;
     }
 
-    public static int sumUpInt(final List<Integer> list) {
-        return list.stream().reduce(Integer::sum).orElse(0);
-    }
-
-    public static BigDecimal sumUpBd(final List<BigDecimal> list) {
-        return CollectionUtils.emptyIfNull(list).stream()
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public static List<Coordinate> findAllOccurences(
+            final String[][] matrix,
+            final String letter
+    ) {
+        final List<Coordinate> occurences = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j].equals(letter)) {
+                    occurences.add(new Coordinate(i, j));
+                }
+            }
+        }
+        return occurences;
     }
 
 

@@ -1,11 +1,10 @@
 package year2024.day04;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import application.Day;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import utils.ArrayUtils;
+import utils.Coordinate;
 import utils.ImportUtils;
 
 /**
@@ -19,7 +18,7 @@ public class Day04 extends Day {
         // final List<String> testInput = ImportUtils.readAsList(FILE_PATH);
         final String[][] matrix = ImportUtils.convertListToArray(input);
 
-        final int findings = findAllOccurences(matrix, "X").stream()
+        final int findings = ArrayUtils.findAllOccurences(matrix, "X").stream()
                 .mapToInt(x -> checkLetterInNeighborhood(x, matrix))
                 .sum();
 
@@ -65,26 +64,11 @@ public class Day04 extends Day {
         return 0;
     }
 
-    private List<Coordinate> findAllOccurences(
-            final String[][] matrix,
-            final String letter
-    ) {
-        final List<Coordinate> occurences = new ArrayList<>();
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j].equals(letter)) {
-                    occurences.add(new Coordinate(i, j));
-                }
-            }
-        }
-        return occurences;
-    }
-
     public String part2(final List<String> input) {
         // final List<String> testInput = ImportUtils.readAsList(FILE_PATH);
         final String[][] matrix = ImportUtils.convertListToArray(input);
 
-        final int findings = findAllOccurences(matrix, "A").stream()
+        final int findings = ArrayUtils.findAllOccurences(matrix, "A").stream()
                 .mapToInt(a -> checkLetterInNeighborhoodPart2(a, matrix))
                 .sum();
 
@@ -135,11 +119,4 @@ public class Day04 extends Day {
         return true;
     }
 
-    @Data
-    @AllArgsConstructor
-    public class Coordinate {
-
-        int x;
-        int y;
-    }
 }
