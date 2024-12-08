@@ -91,4 +91,45 @@ public class ArrayUtils {
         }
         return hash.toString();
     }
+
+    public static Integer[] removeFirstOccurrence(
+            final Integer[] array,
+            final int element
+    ) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == element) {
+                final Integer[] newArray = new Integer[array.length - 1];
+                System.arraycopy(array, 0, newArray, 0, i);
+                System.arraycopy(array, i + 1, newArray, i, array.length - i - 1);
+                return newArray;
+            }
+        }
+        return array;
+    }
+
+    public static Long[] removeFirstOccurrence(
+            final Long[] array,
+            final long element
+    ) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == element) {
+                final Long[] newArray = new Long[array.length - 1];
+                System.arraycopy(array, 0, newArray, 0, i);
+                System.arraycopy(array, i + 1, newArray, i, array.length - i - 1);
+                return newArray;
+            }
+        }
+        return array;
+    }
+
+    public static boolean isWithinBounds(String[][] matrix, Coordinate coordinate) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false; // Leere oder null-Matrix
+        }
+
+        int x = coordinate.x;
+        int y = coordinate.y;
+
+        return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
+    }
 }
