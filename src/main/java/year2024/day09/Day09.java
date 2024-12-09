@@ -2,7 +2,8 @@ package year2024.day09;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
 
 import application.Day;
 import lombok.AllArgsConstructor;
@@ -16,38 +17,57 @@ public class Day09 extends Day {
 
     private static final String FILE_PATH = "src/main/resources/year2024/day09/input_test_01.txt";
 
+    @Override
     public String part1(final List<String> input) {
         final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
         log(importInput.toString());
 
-        final List<String> stringRep = parseInput(importInput);
-        log(stringRep.toString());
+        final List<Block> parsedInput = parseInputForPart1(input);
+        log(createLoggableBlocklist(parsedInput));
 
-        final List<String> convertedInput = convertInput(stringRep);
-        log(convertedInput.toString());
+        final List<Block> convertedInput = convertInput(parsedInput);
+        log(createLoggableBlocklist(convertedInput));
 
-        final long product = multiply(convertedInput);
+        final long product = multiplyBlocks(convertedInput);
 
         return String.valueOf(product);
     }
 
+    @Override
     public String part2(final List<String> input) {
         final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
-        log(importInput.toString());
+        log(input.toString());
 
-        final List<Block> stringRep = parseInputForPart2(importInput);
-        log(stringRep.toString());
+        final List<Block> parsedInput = parseInputForPart2(input);
+        log(createLoggableBlocklist(parsedInput));
 
-        final List<String> convertedInput = convertInputForPart2(stringRep);
-        log(convertedInput.toString());
+        final List<Block> convertedInput = convertInput(parsedInput);
+        log(createLoggableBlocklist(convertedInput));
 
-        final long product = multiply(convertedInput);
+        final long product = multiplyBlocks(convertedInput);
 
         return String.valueOf(product);
     }
 
-    private List<String> convertInputForPart2(final List<Block> blockList) {
+    private List<Block> parseInputForPart1(final List<String> importInput) {
+        final String string = importInput.get(0);
 
+        final char[] array = string.toCharArray();
+        final List<Block> result = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            final int value = Integer.parseInt(String.valueOf(array[i]));
+            if (i % 2 == 0) {
+                for (int j = 0; j < value; j++) {
+                    result.add(new Block(String.valueOf(i / 2), 1, false));
+                }
+            } else {
+                for (int j = 0; j < value; j++) {
+                    result.add(new Block(".", 1, false));
+                }
+            }
+        }
+
+        return result;
     }
 
     private List<Block> parseInputForPart2(final List<String> importInput) {
@@ -58,31 +78,86 @@ public class Day09 extends Day {
         for (int i = 0; i < array.length; i++) {
             final int value = Integer.parseInt(String.valueOf(array[i]));
             if (i % 2 == 0) {
-                result.add(new Block(String.valueOf(i / 2), value));
+                result.add(new Block(String.valueOf(i / 2), value, false));
             } else {
-                for (int j = 0; j < value; j++) {
-                    result.add(new Block(".", value));
-                }
+                result.add(new Block(".", value, false));
             }
         }
 
         return result;
     }
 
-    @Data
-    @AllArgsConstructor
-    private class Block {
+    private List<Block> convertInput(final List<Block> blockList) {
+        log(createLoggableBlocklist(blockList));
+        while (true) {
 
-        String number;
-        Integer amount;
+            final int numberIndex = findUnvisitedLastNumberIndexForBlocks(blockList);
+            if (numberIndex == -1) {
+                break;
+            }
+
+            final Block numberBlock = blockList.get(numberIndex);
+            numberBlock.setVisited(true);
+            final int dotIndex = findDotIndexForBlock(blockList, numberBlock.getAmount());
+
+            if (dotIndex > numberIndex || dotIndex == -1) {
+                continue;
+            }
+
+            final Block dotBlock = blockList.get(dotIndex);
+            final int newDots = dotBlock.getAmount() - numberBlock.getAmount();
+            dotBlock.setAmount(newDots);
+            blockList.add(dotIndex, numberBlock);
+            blockList.remove(numberIndex + 1);
+            blockList.add(numberIndex, new Block(".", numberBlock.getAmount(), false));
+            log(createLoggableBlocklist(blockList));
+        }
+
+        return blockList;
+    }
+
+    private String createLoggableBlocklist(final List<Block> blockList) {
+        final StringBuilder s = new StringBuilder();
+        for (final Block block : blockList) {
+            s.append((block.getNumber()).repeat(block.getAmount()));
+        }
+        return s.toString();
+    }
+
+    private int findDotIndexForBlock(
+            final List<Block> blockList,
+            final int blockAmount
+    ) {
+        for (int i = 0; i < blockList.size(); i++) {
+            final Block dotBlock = blockList.get(i);
+            if (StringUtils.equals(dotBlock.getNumber(), ".") && blockAmount <= dotBlock.getAmount()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 
-    private long multiply(final List<String> convertedInput) {
-        final List<Long> list = convertedInput.stream()
-                .filter(s -> !Objects.equals(s, "."))
-                .map(Long::parseLong)
-                .toList();
+    private int findUnvisitedLastNumberIndexForBlocks(final List<Block> stringList) {
+        for (int i = stringList.size() - 1; i >= 0; i--) {
+            final Block block = stringList.get(i);
+            if (!StringUtils.equals(block.getNumber(), ".") && !block.isVisited()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private long multiplyBlocks(final List<Block> convertedInput) {
+        final List<Long> list = new ArrayList<>();
+        for (final Block block : convertedInput) {
+            for (int i = 0; i < block.getAmount(); i++) {
+                    list.add(block.getNumber().equals(".")
+                            ? 0L
+                            : Long.parseLong(block.getNumber())
+                    );
+            }
+        }
 
         long productSum = 0L;
         for (int i = 0; i < list.size(); i++) {
@@ -91,54 +166,15 @@ public class Day09 extends Day {
         return productSum;
     }
 
-    private List<String> convertInput(final List<String> stringList) {
-        boolean remainingAreAllDots = false;
-        while (!remainingAreAllDots) {
-            final int dotIndex = stringList.indexOf(".");
-            final int numberIndex = findLastNumberIndex(stringList);
+    @Data
+    @AllArgsConstructor
+    private static class Block {
 
-            stringList.set(dotIndex, stringList.get(numberIndex));
-            stringList.set(numberIndex, ".");
-            log(stringList.toString());
-
-            final int newDotIndex = stringList.indexOf(".");
-            remainingAreAllDots = stringList.subList(newDotIndex, stringList.size()).stream()
-                    .allMatch(c -> Objects.equals(c, "."));
-        }
-
-        return stringList;
+        String number;
+        Integer amount;
+        boolean visited;
     }
 
-    private int findLastNumberIndex(final List<String> stringList) {
-        for (int i = stringList.size() - 1; i >= 0; i--) {
-            if (!Objects.equals(stringList.get(i), ".")) {
-                return i;
-            }
-        }
-        return stringList.size();
-    }
-
-
-    private List<String> parseInput(final List<String> importInput) {
-        final String string = importInput.get(0);
-
-        final char[] array = string.toCharArray();
-        final List<String> result = new ArrayList<>();
-        for (int i = 0; i < array.length; i++) {
-            final int value = Integer.parseInt(String.valueOf(array[i]));
-            if (i % 2 == 0) {
-                for (int j = 0; j < value; j++) {
-                    result.add(String.valueOf(i / 2));
-                }
-            } else {
-                for (int j = 0; j < value; j++) {
-                    result.add(".");
-                }
-            }
-        }
-
-        return result;
-    }
 
     @Override
     public Boolean getLoggingEnabled() {
