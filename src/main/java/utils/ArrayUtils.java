@@ -81,6 +81,43 @@ public class ArrayUtils {
         return occurences;
     }
 
+    public static List<Coordinate> filterSurroundingCoordinates(
+            final String[][] map,
+            final Coordinate coords,
+            final String target
+    ) {
+        // Check boundaries to avoid ArrayIndexOutOfBoundsException
+        final int rows = map.length;
+        final int cols = map[0].length;
+
+        final int x = coords.getX();
+        final int y = coords.getY();
+
+        final List<Coordinate> result = new ArrayList<>();
+
+        // Check the left cell
+        if (x > 0 && map[x - 1][y].equals(target)) {
+            result.add(new Coordinate(x - 1, y));
+        }
+
+        // Check the right cell
+        if (x < rows - 1 && map[x + 1][y].equals(target)) {
+            result.add(new Coordinate(x + 1, y));
+        }
+
+        // Check the top cell
+        if (y > 0 && map[x][y - 1].equals(target)) {
+            result.add(new Coordinate(x, y - 1));
+        }
+
+        // Check the bottom cell
+        if (y < cols - 1 && map[x][y + 1].equals(target)) {
+            result.add(new Coordinate(x, y + 1));
+        }
+
+        return result;
+    }
+
 
     public static String generateHash(final String[][] array) {
         final StringBuilder hash = new StringBuilder();
@@ -122,13 +159,16 @@ public class ArrayUtils {
         return array;
     }
 
-    public static boolean isWithinBounds(String[][] matrix, Coordinate coordinate) {
+    public static boolean isWithinBounds(
+            final String[][] matrix,
+            final Coordinate coordinate
+    ) {
         if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
             return false; // Leere oder null-Matrix
         }
 
-        int x = coordinate.x;
-        int y = coordinate.y;
+        final int x = coordinate.x;
+        final int y = coordinate.y;
 
         return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
     }
