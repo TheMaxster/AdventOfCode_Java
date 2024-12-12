@@ -172,4 +172,15 @@ public class ArrayUtils {
 
         return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
     }
+
+    public static boolean isWithinBounds(
+            final String[][] matrix,
+            final int x,
+            final int y
+    ) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false; // Leere oder null-Matrix
+        }
+        return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
+    }
 }
