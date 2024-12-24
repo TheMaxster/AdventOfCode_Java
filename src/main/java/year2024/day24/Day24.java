@@ -5,8 +5,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import application.Day;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import utils.ImportUtils;
 
 /**
@@ -14,9 +17,12 @@ import utils.ImportUtils;
  */
 public class Day24 extends Day {
 
-
     private static final String FILE_PATH = "src/main/resources/year2024/day24/input_test_01.txt";
 
+    @Override
+    public Boolean getLoggingEnabled() {
+        return true;
+    }
 
     public String part1(final List<String> input) {
         final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
@@ -28,20 +34,15 @@ public class Day24 extends Day {
 
         final Map<String, Integer> wireValues = simulateSystem(initialWireValues, gates);
 
-        // Compute the binary number from z wires
-        final List<String> zWires = wireValues.keySet().stream()
+        final String binary = wireValues.keySet().stream()
                 .filter(wire -> wire.startsWith("z"))
                 .sorted(Comparator.reverseOrder())
-                .toList();
+                .map(wireValues::get)
+                .map(String::valueOf)
+                .collect(Collectors.joining());
 
-        final StringBuilder binary = new StringBuilder();
-        for (final String zWire : zWires) {
-            binary.append(wireValues.get(zWire));
-        }
-
-        log(binary.toString());
-        final Long int2BaseTwo = Long.parseLong(binary.toString(), 2);
-        return String.valueOf(int2BaseTwo);
+        log(binary);
+        return String.valueOf(Long.parseLong(binary, 2));
     }
 
     private void parseInput(
@@ -49,23 +50,18 @@ public class Day24 extends Day {
             final List<String> gates,
             final List<String> input
     ) {
-        boolean firstBlock = true;
-        for (final String s : input) {
-            if (s.isEmpty()) {
-                firstBlock = false;
-                continue;
-            }
-            if (firstBlock) {
-                final String[] block = s.split(":");
-                final String key = block[0];
-                final int value = Integer.parseInt(block[1].trim());
-                initialWireValues.put(key, value);
-            }
-            if (!firstBlock) {
-                gates.add(s);
+        boolean parsingInitialValues = true;
+
+        for (final String line : input) {
+            if (line.isEmpty()) {
+                parsingInitialValues = false;
+            } else if (parsingInitialValues) {
+                final String[] parts = line.split(":");
+                initialWireValues.put(parts[0], Integer.parseInt(parts[1].trim()));
+            } else {
+                gates.add(line);
             }
         }
-
     }
 
     public String part2(final List<String> input) {
@@ -77,13 +73,18 @@ public class Day24 extends Day {
             final List<String> gates
     ) {
         final Map<String, Integer> wireValues = new HashMap<>(initialWireValues);
-        final Map<String, String[]> gateDefinitions = new HashMap<>();
+        final Map<String, Gate> gateDefinitions = new HashMap<>();
 
         // Parse gates
         for (final String gate : gates) {
             final String[] parts = gate.split(" -> ");
             final String output = parts[1];
-            gateDefinitions.put(output, parts[0].split(" "));
+            final String[] operation = parts[0].split(" ");
+            final String operand1 = operation[0];
+            final Operation operator = Operation.valueOf(operation[1]);
+            final String operand2 = operation[2];
+            final Gate newGate = new Gate(operand1, operand2, operator);
+            gateDefinitions.put(output, newGate);
         }
 
         // Resolve all wires
@@ -97,44 +98,39 @@ public class Day24 extends Day {
     private static int resolveWire(
             final String wire,
             final Map<String, Integer> wireValues,
-            final Map<String, String[]> gateDefinitions
+            final Map<String, Gate> gateDefinitions
     ) {
         // If already resolved
         if (wireValues.containsKey(wire)) {
             return wireValues.get(wire);
         }
 
-        final String[] definition = gateDefinitions.get(wire);
-        final String operand1 = definition[0];
-        final String operator = definition.length > 2 ? definition[1] : null;
-        final String operand2 = definition.length > 2 ? definition[2] : null;
+        final Gate operation = gateDefinitions.get(wire);
+        final String operand1 = operation.a;
+        final Operation operator = operation.op;
+        final String operand2 = operation.b;
 
-        final int value1 = operand1.matches("\\d") ? Integer.parseInt(operand1) : resolveWire(operand1, wireValues, gateDefinitions);
-        final int value2 = operand2 != null ? (operand2.matches("\\d") ? Integer.parseInt(operand2)
-                : resolveWire(operand2, wireValues, gateDefinitions)) : 0;
+        final int value1 = resolveWire(operand1, wireValues, gateDefinitions);
+        final int value2 = resolveWire(operand2, wireValues, gateDefinitions);
 
-        final int result;
-        switch (operator) {
-            case "AND":
-                result = value1 & value2;
-                break;
-            case "OR":
-                result = value1 | value2;
-                break;
-            case "XOR":
-                result = value1 ^ value2;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown operator: " + operator);
-        }
+        final int result = switch (operator) {
+            case AND -> value1 & value2;
+            case OR -> value1 | value2;
+            case XOR -> value1 ^ value2;
+        };
 
         wireValues.put(wire, result);
         return result;
     }
 
-    @Override
-    public Boolean getLoggingEnabled() {
-        return true;
+    private enum Operation {AND, OR, XOR}
+
+    @Data
+    @AllArgsConstructor
+    private class Gate {
+
+        public String a, b;
+        public Operation op;
     }
 
 
