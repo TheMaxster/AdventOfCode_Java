@@ -1,7 +1,11 @@
 package utils;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
+import year2024.day20.Day20;
 
 /**
  * The ArrayUtils for the AoC setup.
@@ -9,6 +13,14 @@ import java.util.List;
  * @author mglembock
  */
 public class ArrayUtils {
+
+    // Directions: North, East, South, West
+    public static final int[][] DIRECTIONS = {
+            {-1, 0}, // North
+            {0, 1},  // East
+            {1, 0},  // South
+            {0, -1}  // West
+    };
 
     public static String[][] transpose(final String[][] original) {
         final int numRows = original.length;
@@ -74,6 +86,21 @@ public class ArrayUtils {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 if (matrix[i][j].equals(letter)) {
+                    occurences.add(new Coordinate(i, j));
+                }
+            }
+        }
+        return occurences;
+    }
+
+    public static List<Coordinate> findAllOccurences(
+            final char[][] matrix,
+            final char letter
+    ) {
+        final List<Coordinate> occurences = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == letter) {
                     occurences.add(new Coordinate(i, j));
                 }
             }
@@ -174,14 +201,84 @@ public class ArrayUtils {
     }
 
     public static boolean isWithinBounds(
+            final char[][] matrix,
+            final Coordinate coordinate
+    ) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false; // Leere oder null-Matrix
+        }
+
+        final int x = coordinate.x;
+        final int y = coordinate.y;
+
+        return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
+    }
+
+    public static boolean isWithinBounds(
             final String[][] matrix,
             final int x,
             final int y
     ) {
         if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
-            return false; // Leere oder null-Matrix
+            return false;
         }
         return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
+    }
+
+    public static boolean isWithinBounds(
+            final char[][] matrix,
+            final int x,
+            final int y
+    ) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+        return x >= 0 && x < matrix.length && y >= 0 && y < matrix[0].length;
+    }
+
+    public static List<Coordinate> findShortestPath(
+            final String[][] map,
+            final Coordinate start,
+            final Coordinate end
+    ) {
+        final int rows = map.length;
+        final int cols = map[0].length;
+
+        // Queue for BFS: stores [x, y, distance]
+        final Queue<State> queue = new LinkedList<>();
+        final List<Coordinate> path = new ArrayList<>();
+        path.add(start);
+        queue.add(new State(start, 0, path)); // Start point with distance 0
+
+        // Visited array
+        final boolean[][] visited = new boolean[rows][cols];
+        visited[start.x][start.y] = true;
+
+        while (!queue.isEmpty()) {
+            final State current = queue.poll();
+
+            // Check if we reached the end
+            if (current.getCoordinate().x == end.x && current.getCoordinate().y == end.y) {
+                return current.getPath();
+            }
+
+            // Explore neighbors in all 4 directions
+            for (final int[] direction : DIRECTIONS) {
+                final int nx = current.getCoordinate().x + direction[0];
+                final int ny = current.getCoordinate().y + direction[1];
+
+                // Check if the next position is within bounds, not visited, and not blocked
+                if (ArrayUtils.isWithinBounds(map, nx, ny) && !visited[nx][ny] && !map[nx][ny].equals("#")) {
+                    visited[nx][ny] = true; // Mark as visited
+                    final Coordinate newCoordinate = new Coordinate(nx, ny);
+                    final List<Coordinate> newPath = new ArrayList<>(current.getPath());
+                    newPath.add(newCoordinate);
+                    queue.add(new State(newCoordinate, current.getScore() + 1, newPath)); // Add to queue with updated distance
+                }
+            }
+        }
+
+        return new ArrayList<>(); // No path found
     }
 
 

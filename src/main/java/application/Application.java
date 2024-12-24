@@ -83,6 +83,11 @@ public class Application {
         DAYS2024.put(18, new year2024.day18.Day18());
         DAYS2024.put(19, new year2024.day19.Day19());
         DAYS2024.put(20, new year2024.day20.Day20());
+        DAYS2024.put(21, new year2024.day21.Day21());
+        DAYS2024.put(22, new year2024.day22.Day22());
+        DAYS2024.put(23, new year2024.day23.Day23());
+        DAYS2024.put(24, new year2024.day24.Day24());
+
 
         YEARS = new HashMap<>();
         YEARS.put(2023, DAYS2023);

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import utils.ArrayUtils;
 import utils.Coordinate;
+import utils.Direction;
 import utils.ImportUtils;
 
 /**
@@ -18,9 +19,10 @@ public class Day06 extends Day {
 
     private static final String FILE_PATH = "src/main/resources/year2024/day06/input_test_01.txt";
 
+    @Override
     public String part1(final List<String> input) {
         final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
-        final String[][] matrix = ImportUtils.convertListToArray(importInput);
+        final String[][] matrix = ImportUtils.convertListToArray(input);
 
         final Coordinate startingPoint = ArrayUtils.findAllOccurences(matrix, "^").get(0);
         log("Starting point: " + startingPoint);
@@ -28,6 +30,26 @@ public class Day06 extends Day {
         final PathFindingResult result = getPointsVisited(matrix, startingPoint);
 
         return Integer.toString(result.pointsVisited.size());
+    }
+
+    @Override
+    public String part2(final List<String> input) {
+        final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
+        final String[][] matrix = ImportUtils.convertListToArray(input);
+
+        final Coordinate startingPoint = ArrayUtils.findAllOccurences(matrix, "^").get(0);
+        log("Starting point: " + startingPoint);
+
+        final PathFindingResult result = getPointsVisited(matrix, startingPoint);
+        result.pointsVisited.remove(startingPoint);
+
+        final Long foundLoops = result.pointsVisited.stream()
+                .map(coord -> createModifiedDeepCopy(matrix, coord))
+                .map(copy -> getPointsVisited(copy, startingPoint))
+                .filter(PathFindingResult::isLoopFound)
+                .count();
+
+        return String.valueOf(foundLoops);
     }
 
     private PathFindingResult getPointsVisited(
@@ -51,8 +73,8 @@ public class Day06 extends Day {
                 break;
             }
 
-            final Coordinate nextPoint = nextCoordinate(currentPoint, direction);
-            reachedEnd = !nextPointReachable(nextPoint, matrix);
+            final Coordinate nextPoint = currentPoint.nextCoordinate(direction);
+            reachedEnd = !ArrayUtils.isWithinBounds(matrix, nextPoint);
             if (reachedEnd) {
                 pointsVisited.add(currentPoint);
                 stepsMade++;
@@ -61,7 +83,7 @@ public class Day06 extends Day {
 
             final String nextPointString = matrix[nextPoint.x][nextPoint.y];
             if (nextPointString.equals("#")) {
-                direction = getNextDirection(direction);
+                direction = Direction.getNextDirectionClockwise(direction);
             } else {
                 pointsVisited.add(currentPoint);
                 stepsMade++;
@@ -69,55 +91,6 @@ public class Day06 extends Day {
             }
         }
         return new PathFindingResult(pointsVisited, loopFound);
-    }
-
-    private Coordinate nextCoordinate(
-            final Coordinate coord,
-            final Direction dir
-    ) {
-        return switch (dir) {
-            case NORTH -> new Coordinate(coord.x - 1, coord.y);
-            case EAST -> new Coordinate(coord.x, coord.y + 1);
-            case SOUTH -> new Coordinate(coord.x + 1, coord.y);
-            case WEST -> new Coordinate(coord.x, coord.y - 1);
-        };
-    }
-
-    private boolean nextPointReachable(
-            final Coordinate nextPoint,
-            final String[][] matrix
-    ) {
-        final int matrixLength = matrix.length;
-        final int matrixWidth = matrix[0].length;
-        return nextPoint.x < matrixWidth && nextPoint.x >= 0 && nextPoint.y < matrixLength && nextPoint.y >= 0;
-    }
-
-    private Direction getNextDirection(final Direction direction) {
-        return switch (direction) {
-            case NORTH -> Direction.EAST;
-            case EAST -> Direction.SOUTH;
-            case SOUTH -> Direction.WEST;
-            case WEST -> Direction.NORTH;
-        };
-    }
-
-    public String part2(final List<String> input) {
-        final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
-        final String[][] matrix = ImportUtils.convertListToArray(input);
-
-        final Coordinate startingPoint = ArrayUtils.findAllOccurences(matrix, "^").get(0);
-        log("Starting point: " + startingPoint);
-
-        final PathFindingResult result = getPointsVisited(matrix, startingPoint);
-        result.pointsVisited.remove(startingPoint);
-
-        final Long foundLoops = result.pointsVisited.stream().map(
-                        a -> createModifiedDeepCopy(matrix, a)
-                ).map(copy -> getPointsVisited(copy, startingPoint))
-                .filter(a -> a.loopFound)
-                .count();
-
-        return String.valueOf(foundLoops);
     }
 
     private String[][] createModifiedDeepCopy(
@@ -134,16 +107,12 @@ public class Day06 extends Day {
         return false;
     }
 
-    private enum Direction {
-        NORTH, SOUTH, EAST, WEST
-    }
-
     @Data
     @AllArgsConstructor
     public class PathFindingResult {
 
-        Set<Coordinate> pointsVisited;
-        boolean loopFound;
+        private Set<Coordinate> pointsVisited;
+        private boolean loopFound;
     }
 
 }

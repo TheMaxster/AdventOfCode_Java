@@ -20,13 +20,6 @@ import utils.ImportUtils;
  */
 public class Day18 extends Day {
 
-    // Directions: North, East, South, West
-    private static final int[][] DIRECTIONS = {
-            {-1, 0}, // North
-            {0, 1},  // East
-            {1, 0},  // South
-            {0, -1}  // West
-    };
 
     private static final String FILE_PATH = "src/main/resources/year2024/day18/input_test_01.txt";
     private static final int TEST_WIDTH = 7;
@@ -51,7 +44,7 @@ public class Day18 extends Day {
 
         final String[][] map = createMap(widthToUse, heightToUse, bytesToFall, bytes);
 
-        final int steps = findShortestPath(map, start, end);
+        final int steps = ArrayUtils.findShortestPath(map, start, end).size();
 
         return String.valueOf(steps);
     }
@@ -77,7 +70,7 @@ public class Day18 extends Day {
         for (int i = 1; i < bytes.size(); i++) {
             final String[][] map = createMap(widthToUse, heightToUse, i, bytes);
 
-            final int steps = findShortestPath(map, start, end);
+            final int steps = ArrayUtils.findShortestPath(map, start, end).size();
             if (steps == -1) {
                 result = bytes.get(i - 1);
                 break;
@@ -125,51 +118,4 @@ public class Day18 extends Day {
         return true;
     }
 
-    public static int findShortestPath(
-            final String[][] map,
-            final Coordinate start,
-            final Coordinate end
-    ) {
-        final int rows = map.length;
-        final int cols = map[0].length;
-
-        // Queue for BFS: stores [x, y, distance]
-        final Queue<State> queue = new LinkedList<>();
-        queue.add(new State(start, 0)); // Start point with distance 0
-
-        // Visited array
-        final boolean[][] visited = new boolean[rows][cols];
-        visited[start.x][start.y] = true;
-
-        while (!queue.isEmpty()) {
-            final State current = queue.poll();
-
-            // Check if we reached the end
-            if (current.getCoordinate().x == end.x && current.getCoordinate().y == end.y) {
-                return current.getScore();
-            }
-
-            // Explore neighbors in all 4 directions
-            for (final int[] direction : DIRECTIONS) {
-                final int nx = current.getCoordinate().x + direction[0];
-                final int ny = current.getCoordinate().y + direction[1];
-
-                // Check if the next position is within bounds, not visited, and not blocked
-                if (ArrayUtils.isWithinBounds(map, nx, ny) && !visited[nx][ny] && !map[nx][ny].equals("#")) {
-                    visited[nx][ny] = true; // Mark as visited
-                    queue.add(new State(new Coordinate(nx, ny), current.getScore() + 1)); // Add to queue with updated distance
-                }
-            }
-        }
-
-        return -1; // No path found
-    }
-
-    @Data
-    @AllArgsConstructor
-    private static class State {
-
-        private final Coordinate coordinate;
-        private final int score;
-    }
 }

@@ -10,11 +10,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import application.Day;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import utils.ArrayUtils;
 import utils.Coordinate;
+import utils.Direction;
 import utils.ImportUtils;
+import utils.State;
 
 /**
  * See https://adventofcode.com/2024/day/1
@@ -23,15 +23,6 @@ public class Day16 extends Day {
 
     //  private static final String FILE_PATH = "src/main/resources/year2024/day16/input_test_01.txt";
     private static final String FILE_PATH = "src/main/resources/year2024/day16/input_test_02.txt";
-
-
-    // Directions: North, East, South, West
-    private static final int[][] DIRECTIONS = {
-            {-1, 0}, // North
-            {0, 1},  // East
-            {1, 0},  // South
-            {0, -1}  // West
-    };
 
     public String part1(final List<String> input) {
         final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
@@ -55,27 +46,28 @@ public class Day16 extends Day {
         final Coordinate end = ArrayUtils.findAllOccurences(maze, "E").get(0);
 
         // Priority queue for BFS (min-heap by score)
-        final PriorityQueue<State> pq = new PriorityQueue<>(Comparator.comparingInt(s -> s.score));
+        final PriorityQueue<State> pq = new PriorityQueue<>(Comparator.comparingInt(State::getScore));
+
         // Map to track visited states
         final Map<String, Integer> visited = new HashMap<>();
         final List<State> bestPaths = new ArrayList<>();
         int minScore = Integer.MAX_VALUE;
 
         // Initial state: start facing East (index 1 in DIRECTIONS)
-        pq.add(new State(start, 1, 0, List.of(start)));
-        visited.put(encodeState(start, 1), 0);
+        pq.add(new State(start, 0, List.of(start), Direction.EAST));
+        visited.put(encodeState(start, Direction.EAST), 0);
 
         while (!pq.isEmpty()) {
             final State current = pq.poll();
 
             // If we reach the end, check the score
             if (current.getCoordinate().getX() == end.getX() && current.getCoordinate().getY() == end.getY()) {
-                if (current.score < minScore) {
+                if (current.getScore() < minScore) {
                     // Found a new minimum score
-                    minScore = current.score;
+                    minScore = current.getScore();
                     bestPaths.clear();
                 }
-                if (current.score == minScore) {
+                if (current.getScore() == minScore) {
                     bestPaths.add(current);
                 }
                 continue;
@@ -84,43 +76,50 @@ public class Day16 extends Day {
             // Try all possible actions
             // 1. Move forward
             final Coordinate currentCoordinate = current.getCoordinate();
-            final int newX = currentCoordinate.getX() + DIRECTIONS[current.direction][0];
-            final int newY = currentCoordinate.getY() + DIRECTIONS[current.direction][1];
+            final Coordinate newCoord = currentCoordinate.nextCoordinate(current.getDirection());
 
-            if (ArrayUtils.isWithinBounds(maze, newX, newY) && !maze[newX][newY].equals("#")) {
+            if (ArrayUtils.isWithinBounds(maze, newCoord) && !maze[newCoord.getX()][newCoord.getY()].equals("#")) {
                 final List<Coordinate> path = new ArrayList<>(current.getPath());
-                final Coordinate newCoord = new Coordinate(newX, newY);
                 path.add(newCoord);
-                final State nextState = new State(newCoord, current.direction, current.score + 1, path);
-                final String encoded = encodeState(newCoord, current.direction);
+                final State nextState = new State(newCoord, current.getScore() + 1, path, current.getDirection());
+                final String encoded = encodeState(newCoord, current.getDirection());
 
                 // Allow revisit if this path has the same or better score
-                if (!visited.containsKey(encoded) || visited.get(encoded) >= nextState.score) {
-                    visited.put(encoded, nextState.score);
+                if (!visited.containsKey(encoded) || visited.get(encoded) >= nextState.getScore()) {
+                    visited.put(encoded, nextState.getScore());
                     pq.add(nextState);
                 }
             }
 
             // 2. Rotate clockwise
-            final int newDirectionClockwise = (current.direction + 1) % 4;
-            final State nextClockwise = new State(current.getCoordinate(), newDirectionClockwise, current.score + 1000, current.getPath());
+            final Direction newDirectionClockwise = Direction.getNextDirectionClockwise(current.getDirection());
+            final State nextClockwise = new State(
+                    current.getCoordinate(),
+                    current.getScore() + 1000,
+                    current.getPath(),
+                    newDirectionClockwise
+            );
             final String encodedClockwise = encodeState(current.getCoordinate(), newDirectionClockwise);
 
             // Allow revisit if this path has the same or better score
-            if (!visited.containsKey(encodedClockwise) || visited.get(encodedClockwise) >= nextClockwise.score) {
-                visited.put(encodedClockwise, nextClockwise.score);
+            if (!visited.containsKey(encodedClockwise) || visited.get(encodedClockwise) >= nextClockwise.getScore()) {
+                visited.put(encodedClockwise, nextClockwise.getScore());
                 pq.add(nextClockwise);
             }
 
             // 3. Rotate counterclockwise
-            final int newDirectionCounterclockwise = (current.direction + 3) % 4; // +3 is equivalent to -1 modulo 4
-            final State nextCounterclockwise = new State(current.getCoordinate(), newDirectionCounterclockwise, current.score + 1000,
-                    current.getPath());
+            final Direction newDirectionCounterclockwise = Direction.getNextDirectionCounterClockwise(current.getDirection());
+            final State nextCounterclockwise = new State(
+                    current.getCoordinate(),
+                    current.getScore() + 1000,
+                    current.getPath(),
+                    newDirectionCounterclockwise
+            );
             final String encodedCounterclockwise = encodeState(current.getCoordinate(), newDirectionCounterclockwise);
 
             // Allow revisit if this path has the same or better score
-            if (!visited.containsKey(encodedCounterclockwise) || visited.get(encodedCounterclockwise) >= nextCounterclockwise.score) {
-                visited.put(encodedCounterclockwise, nextCounterclockwise.score);
+            if (!visited.containsKey(encodedCounterclockwise) || visited.get(encodedCounterclockwise) >= nextCounterclockwise.getScore()) {
+                visited.put(encodedCounterclockwise, nextCounterclockwise.getScore());
                 pq.add(nextCounterclockwise);
             }
         }
@@ -131,20 +130,20 @@ public class Day16 extends Day {
     // Encode the state as a string for visited tracking
     private static String encodeState(
             final Coordinate coodinate,
-            final int direction
+            final Direction direction
     ) {
         return coodinate.getX() + "," + coodinate.getY() + "," + direction;
     }
 
-    // State class representing a position in the maze with direction and score
-    @Data
-    @AllArgsConstructor
-    private static class State {
-
-        private final Coordinate coordinate;
-        private final int direction, score;
-        private final List<Coordinate> path;
-    }
+    //    // State class representing a position in the maze with direction and score
+    //    @Data
+    //    @AllArgsConstructor
+    //    private static class State {
+    //
+    //        private final Coordinate coordinate;
+    //        private final int direction, score;
+    //        private final List<Coordinate> path;
+    //    }
 
 
     @Override

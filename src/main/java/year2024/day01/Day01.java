@@ -11,7 +11,6 @@ import utils.ImportUtils;
 import utils.ListUtils;
 
 
-
 /**
  * See https://adventofcode.com/2024/day/1
  */
