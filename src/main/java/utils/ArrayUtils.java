@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import year2024.day20.Day20;
-
 /**
  * The ArrayUtils for the AoC setup.
  *
@@ -71,9 +69,7 @@ public class ArrayUtils {
         final String[][] copy = new String[original.length][];
         for (int i = 0; i < original.length; i++) {
             copy[i] = new String[original[i].length];
-            for (int j = 0; j < original[i].length; j++) {
-                copy[i][j] = original[i][j];
-            }
+            System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
         }
         return copy;
     }
