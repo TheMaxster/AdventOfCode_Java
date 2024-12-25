@@ -46,7 +46,7 @@ public class Day17 extends Day {
 
         final String[][] mapToPrint = ArrayUtils.deepCopy2Array(map);
         for (final Node node : shortestPath) {
-            System.out.println("(" + node.x + ", " + node.y + ")");
+            log("(" + node.x + ", " + node.y + ")");
             mapToPrint[node.x][node.y] = "X";
         }
 
@@ -62,7 +62,7 @@ public class Day17 extends Day {
 
         final String[][] mapToPrint = ArrayUtils.deepCopy2Array(map);
         for (final Node node : shortestPath) {
-            System.out.println("(" + node.x + ", " + node.y + ")");
+            log("(" + node.x + ", " + node.y + ")");
             mapToPrint[node.x][node.y] = "X";
         }
 

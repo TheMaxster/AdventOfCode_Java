@@ -9,7 +9,7 @@ import utils.ImportUtils;
 
 public class Day21Test {
 
-    private static final String SRC_FILE = "src/main/resources/year2123/day21/input.txt";
+    private static final String SRC_FILE = "src/main/resources/year2023/day21/input.txt";
     private static final List<String> INPUT_FILE = ImportUtils.readAsList(SRC_FILE);
 
     private static final Day21 DAY = new Day21();
@@ -20,9 +20,9 @@ public class Day21Test {
         Assertions.assertEquals("3731", result);
     }
 
-    //    @Test
-    //    void testPart2() {
-    //        final String result = DAY.part2(INPUT_FILE);
-    //        Assertions.assertEquals("238421328103151", result);
-    //    }
+    @Test
+    void testPart2() {
+        final String result = DAY.part2(INPUT_FILE);
+        Assertions.assertEquals("N/A", result);
+    }
 }

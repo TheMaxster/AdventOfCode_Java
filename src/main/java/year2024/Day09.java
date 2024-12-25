@@ -11,7 +11,7 @@ import lombok.Data;
 import utils.ImportUtils;
 
 /**
- * See https://adventofcode.com/2024/day/1
+ * See https://adventofcode.com/2024/day/9
  */
 public class Day09 extends Day {
 

@@ -99,7 +99,7 @@ public class Day22 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
 }

@@ -1,48 +1,29 @@
 package year2023;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import application.Day;
-import utils.ListUtils;
 
 /**
  * See https://adventofcode.com/2023/day/1
  */
 public class Day01 extends Day {
 
-    //    private static final String FILE_PATH = "resources/main.resources.year2023/day01/input.txt";
-    //
-    //    public static void main(final String[] args) {
-    //        final String solutionPart1 = part1();
-    //        log("Solution Part 1:" + solutionPart1);
-    //        final String solutionPart2 = part2();
-    //        log("Solution Part 2:" + solutionPart2);
-    //    }
+    //    private static final String FILE_PATH = "resources/main/resources/year2023/day01/input.txt";
 
     public String part1(final List<String> input) {
         //        final List<String> input = ImportUtils.readAsList(FILE_PATH);
 
-        final int result = 0;
+        final long sum = input.stream()
+                .map(line -> findFirstNumber(line) + findLastNumber(line))
+                .mapToLong(Long::valueOf)
+                .sum();
 
-        final List<BigDecimal> bdNumbers = new ArrayList<>();
-        for (final String line : input) {
-            // Solution for problem 1:
-            final String firstNumber = findFirstNumber(line);
-            final String lastNumber = findLastNumber(line);
-
-            final String number = firstNumber + lastNumber;
-
-            // log(line + " => " + number);
-
-            bdNumbers.add(new BigDecimal(number));
-        }
-
-        return ListUtils.sumUpBd(bdNumbers).toString();
+        return String.valueOf(sum);
     }
 
     private static String findLastNumber(final String text) {
@@ -62,6 +43,42 @@ public class Day01 extends Day {
 
     public String part2(final List<String> input) {
 
+        //        final List<String> input = ImportUtils.readAsList(FILE_PATH);
+
+        final Map<String, String> pointsTable = createPointsTable();
+
+        final Long result = input.stream()
+                .map(line -> extractAndCombineNumbers(line, pointsTable))
+                .mapToLong(Long::valueOf)
+                .sum();
+
+        return result.toString();
+    }
+
+    private String extractAndCombineNumbers(
+            final String line,
+            final Map<String, String> pointsTable
+    ) {
+        final SortedMap<Integer, String> matches = new TreeMap<>();
+
+        pointsTable.forEach((key, value) -> {
+            int index = line.indexOf(key);
+            while (index != -1) {
+                matches.put(index, value);
+                index = line.indexOf(key, index + 1);
+            }
+        });
+
+        if (matches.isEmpty()) {
+            return "0";
+        }
+
+        final String firstNumber = matches.get(matches.firstKey());
+        final String lastNumber = matches.get(matches.lastKey());
+        return firstNumber + lastNumber;
+    }
+
+    private Map<String, String> createPointsTable() {
         final Map<String, String> pointsTable = new HashMap<>();
         pointsTable.put("1", "1");
         pointsTable.put("2", "2");
@@ -82,45 +99,11 @@ public class Day01 extends Day {
         pointsTable.put("seven", "7");
         pointsTable.put("eight", "8");
         pointsTable.put("nine", "9");
-
-        //        final List<String> input = ImportUtils.readAsList(FILE_PATH);
-
-        final List<BigDecimal> bdNumbers = new ArrayList<>();
-
-        for (final String line : input) {
-            // Solution for problem 2:
-
-            final Map<Integer, String> tmpMap = new HashMap<>();
-
-            for (final String key : pointsTable.keySet()) {
-                int index = -1;
-                do {
-                    index += 1;
-                    index = line.indexOf(key, index);
-                    if (index != -1) {
-                        tmpMap.put(index, pointsTable.get(key));
-                    }
-                } while (index != -1);
-            }
-
-            final Integer min = Collections.min(tmpMap.keySet());
-            final String firstNumber2 = tmpMap.get(min);
-
-            final Integer max = Collections.max(tmpMap.keySet());
-            final String lastNumber2 = tmpMap.get(max);
-
-            final String number = firstNumber2 + lastNumber2;
-
-            //      log(line + " => " + number);
-
-            bdNumbers.add(new BigDecimal(number));
-        }
-
-        return ListUtils.sumUpBd(bdNumbers).toString();
+        return pointsTable;
     }
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 }

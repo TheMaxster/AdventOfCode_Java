@@ -33,7 +33,9 @@ public class Day05 extends Day {
                 .filter(update -> isUpdateValid(update, rules))
                 .toList();
 
-        final int sum = validUpdates.stream().mapToInt(validUpdate -> validUpdate.get(validUpdate.size() / 2)).sum();
+        final int sum = validUpdates.stream()
+                .mapToInt(validUpdate -> validUpdate.get(validUpdate.size() / 2))
+                .sum();
         return String.valueOf(sum);
     }
 
@@ -50,7 +52,9 @@ public class Day05 extends Day {
 
         final List<List<Integer>> validUpdates = sortInvalidUpdates(invalidUpdates, rules);
 
-        final int sum = validUpdates.stream().mapToInt(validUpdate -> validUpdate.get(validUpdate.size() / 2)).sum();
+        final int sum = validUpdates.stream()
+                .mapToInt(validUpdate -> validUpdate.get(validUpdate.size() / 2))
+                .sum();
         return String.valueOf(sum);
     }
 
@@ -92,7 +96,7 @@ public class Day05 extends Day {
             final List<List<Integer>> invalidUpdates,
             final Map<Integer, List<Integer>> rules
     ) {
-        return invalidUpdates.stream().map(u -> backtrackAsQueue(u, rules)).toList();
+        return invalidUpdates.parallelStream().map(u -> backtrackAsQueue(u, rules)).toList();
     }
 
     private List<Integer> backtrackAsQueue(

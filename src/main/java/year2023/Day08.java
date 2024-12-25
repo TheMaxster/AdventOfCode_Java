@@ -1,6 +1,5 @@
 package year2023;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,7 @@ public class Day08 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
@@ -29,8 +28,8 @@ public class Day08 extends Day {
 
         // Define our starting key.
         final String startingKey = "AAA";
-        final BigInteger steps = recursiveApproachForPart1(pathInstructionArray, navigationMap, startingKey, BigInteger.ZERO);
-        return steps.toString();
+        final long steps = recursiveApproachForPart1(pathInstructionArray, navigationMap, startingKey, 0L);
+        return String.valueOf(steps);
     }
 
     @Override
@@ -187,11 +186,11 @@ public class Day08 extends Day {
         return newNavigationMap;
     }
 
-    private static BigInteger recursiveApproachForPart1(
+    private static long recursiveApproachForPart1(
             final String[] pathInstructionArray,
             final HashMap<String, LeftRightTuple> navigationMap,
             String nextPathKey,
-            BigInteger steps
+            long steps
     ) {
         for (int i = 0; i < pathInstructionArray.length; i++) {
 
@@ -203,7 +202,7 @@ public class Day08 extends Day {
                 nextPathKey = currenctLocation.right();
             }
 
-            steps = steps.add(BigInteger.ONE);
+            steps++;
         }
 
         if (!Objects.equals(nextPathKey, "ZZZ")) {

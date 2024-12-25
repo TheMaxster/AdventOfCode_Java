@@ -1,6 +1,5 @@
 package year2023;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,7 @@ public class Day06 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
@@ -41,8 +40,8 @@ public class Day06 extends Day {
         final List<Tuple> tuples = new ArrayList<>();
         for (int i = 0; i < timeList.size(); i++) {
             tuples.add(new Tuple(
-                    new BigInteger(timeList.get(i)),
-                    new BigInteger(distanceList.get(i))
+                    Long.valueOf(timeList.get(i)),
+                    Long.valueOf(distanceList.get(i))
             ));
         }
 
@@ -51,14 +50,14 @@ public class Day06 extends Day {
         final List<Integer> solutionsPerTuple = new ArrayList<>();
         for (final Tuple tuple : tuples) {
             int solutions = 0;
-            final BigInteger time = tuple.getTime();
-            final BigInteger distance = tuple.getDistance();
+            final Long time = tuple.getTime();
+            final Long distance = tuple.getDistance();
 
             for (int speed = 1; speed < time.intValue(); speed++) {
 
                 // Check: (time-speed)*speed > distance
-                final BigInteger timeMinusSpeed = time.subtract(BigInteger.valueOf(speed));
-                if (BigInteger.valueOf(speed).multiply(timeMinusSpeed).compareTo(distance) > 0) {
+                final long timeMinusSpeed = time - speed;
+                if (speed * timeMinusSpeed > distance) {
                     solutions++;
                 }
             }
@@ -76,7 +75,7 @@ public class Day06 extends Day {
     private static List<String> getNumbersForPart1(final String input) {
         final String[] splitLeftRight = input.split(":");
         final String[] rightSide = splitLeftRight[1].split(" ");
-        return Arrays.stream(rightSide).map(String::trim).filter(s -> s != "").toList();
+        return Arrays.stream(rightSide).map(String::trim).filter(s -> !s.equals("")).toList();
     }
 
     private static List<String> getNumbersForPart2(final String input) {
@@ -86,10 +85,10 @@ public class Day06 extends Day {
 
     @Data
     @AllArgsConstructor
-    private class Tuple {
+    private static class Tuple {
 
-        BigInteger time;
-        BigInteger distance;
+        Long time;
+        Long distance;
     }
 
 }

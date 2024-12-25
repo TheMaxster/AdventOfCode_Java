@@ -15,15 +15,17 @@ import utils.ImportUtils;
  */
 public class Day21 extends Day {
 
+    private static final String FILE_PATH = "src/main/resources/year2023/day21/input_test_01.txt";
+
+
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
     public String part1(final List<String> input) {
-        // final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day21/input_test_01.txt";
-        final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day21/input.txt";
+        final List<String> importInput = ImportUtils.readAsList(FILE_PATH);
 
         final String[][] grid = ImportUtils.convertListToArray(input);
 
@@ -39,16 +41,16 @@ public class Day21 extends Day {
 
         final int stepsToMake = 64;
 
-        calculate(start, stepsToMake, grid);
-        return "";
+        final int gardenPlots = calculate(start, stepsToMake, grid);
+        return String.valueOf(gardenPlots);
     }
 
     @Override
     public String part2(final List<String> input) {
-        return "";
+        return "N/A";
     }
 
-    private void calculate(
+    private int calculate(
             final Coordinates start,
             final int stepsToMake,
             final String[][] grid
@@ -99,6 +101,8 @@ public class Day21 extends Day {
 
         log("Current garden plots: " + currentCoords.size());
         log("Visited garden plots: " + visited.size());
+
+        return currentCoords.size();
     }
 
     private static Optional<Coordinates> isDirectionVisitable(
@@ -114,28 +118,6 @@ public class Day21 extends Day {
         }
         return Optional.empty();
     }
-
-    //    public static void main(final String[] args) {
-    //        // final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day21/input_test_01.txt";
-    //        final String filePath = System.getProperty("user.dir") + "/resources/main.resources.year2023/day21/input.txt";
-    //
-    //        final String[][] grid = ImportUtils.readAsArray(filePath);
-    //
-    //        Coordinates start = null;
-    //        for (int i = 0; i < grid.length; i++) {
-    //            for (int j = 0; j < grid[i].length; j++) {
-    //                if (Objects.equals(grid[i][j], "S")) {
-    //                    start = new Coordinates(j, i);
-    //                    break;
-    //                }
-    //            }
-    //        }
-    //
-    //        final int stepsToMake = 64;
-    //
-    //        calculate(start, stepsToMake, grid);
-    //
-    //    }
 
     private enum Direction {
         UP(-1, 0),
@@ -154,13 +136,6 @@ public class Day21 extends Day {
             this.deltaY = deltaY;
         }
 
-        public int getDeltaX() {
-            return deltaX;
-        }
-
-        public int getDeltaY() {
-            return deltaY;
-        }
     }
 
     private record Coordinates(int x, int y) {

@@ -1,6 +1,5 @@
 package year2023;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class Day18 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
@@ -66,7 +65,7 @@ public class Day18 extends Day {
      *         the instructions
      * @return the result
      */
-    private BigInteger calculate(final List<Instruction> instructions) {
+    private long calculate(final List<Instruction> instructions) {
 
         final List<Coordinates> polygonPoints = createPolygon(instructions);
 
@@ -81,7 +80,7 @@ public class Day18 extends Day {
         log("innerArea: " + innerArea);
 
         // Return total length as a sum of inner area and boundary area.
-        return BigInteger.valueOf(innerArea + boundaryPoints);
+        return innerArea + boundaryPoints;
     }
 
     /**

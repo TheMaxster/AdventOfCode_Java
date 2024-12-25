@@ -1,10 +1,11 @@
 package year2023;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import application.Day;
 import lombok.AllArgsConstructor;
@@ -31,58 +32,41 @@ public class Day05 extends Day {
 
     @Override
     public String part1(final List<String> input) {
-        final List<BigInteger> seedValues = getSeedValues(input);
-        final List<BigInteger> locations = new ArrayList<>();
+        final List<Long> seedValues = getSeedValues(input);
+        final long minValue = seedValues.stream()
+                .mapToLong(this::analyzeSeed)
+                .min()
+                .orElse(0L);
 
-        for (final BigInteger seed : seedValues) {
-            final BigInteger location = analyzeSeed(seed);
-            locations.add(location);
-        }
-
-        final BigInteger minValue = locations.stream()
-                .min(BigInteger::compareTo)
-                .orElse(BigInteger.ZERO);
-        log("Part 1 Location Minimum: " + minValue.toString());
-        return minValue.toString();
+        return Long.toString(minValue);
     }
 
     @Override
     public String part2(final List<String> input) {
-        final List<BigInteger> seedValues = getSeedValues(input);
+        final List<Long> seedValues = getSeedValues(input);
         final List<Tuple> tupleList = new ArrayList<>();
 
         for (int i = 0; i < seedValues.size(); i = i + 2) {
-            final BigInteger start = seedValues.get(i);
-            final BigInteger range = seedValues.get(i + 1);
-
+            final long start = seedValues.get(i);
+            final long range = seedValues.get(i + 1);
             tupleList.add(new Tuple(start, range));
         }
 
-        final List<BigInteger> resultList = tupleList.parallelStream()
+        final List<Long> resultList = tupleList.parallelStream()
                 .map(this::analyseNumbersInRange)
                 .toList();
 
-        final BigInteger minimum2 = Collections.min(resultList);
+        final long minimum = Collections.min(resultList);
 
-        log("Part 2 Location Minimum: " + minimum2.toString());
-        return minimum2.toString();
+        return String.valueOf(minimum);
     }
 
-    public static List<BigInteger> getSeedValues(final List<String> input) {
-        final List<BigInteger> seedValues = new ArrayList<>();
-
+    public static List<Long> getSeedValues(final List<String> input) {
         final Scanner scanner = ImportUtils.convertListToScanner(input);
+        final List<Long> seedValues = Arrays.stream(scanner.nextLine().replace("seeds:", "").trim().split(" "))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
 
-        // Read line with seeds.
-        if (scanner.hasNextLine()) {
-            final String seedsLine = scanner.nextLine();
-            final String[] seedTokens = seedsLine.replace("seeds:", "").trim().split(" ");
-            for (final String seedToken : seedTokens) {
-                seedValues.add(new BigInteger(seedToken));
-            }
-        }
-
-        // Read all maps.
         seedToSoilMap = parseMap(scanner);
         soilToFertilizerMap = parseMap(scanner);
         fertilizerToWaterMap = parseMap(scanner);
@@ -91,53 +75,49 @@ public class Day05 extends Day {
         temperatureToHumidityMap = parseMap(scanner);
         humidityToLocationMap = parseMap(scanner);
 
-        scanner.close();
-
         return seedValues;
     }
 
-    private BigInteger analyzeSeed(
-            final BigInteger seed
+    private long analyzeSeed(
+            final long seed
     ) {
-        final BigInteger soil = handleMap(seedToSoilMap, seed);
+        final long soil = handleMap(seedToSoilMap, seed);
         log("Soil: " + soil);
-        final BigInteger fertilizer = handleMap(soilToFertilizerMap, soil);
+        final long fertilizer = handleMap(soilToFertilizerMap, soil);
         log("Fertilizer: " + fertilizer);
-        final BigInteger water = handleMap(fertilizerToWaterMap, fertilizer);
+        final long water = handleMap(fertilizerToWaterMap, fertilizer);
         log("Water: " + water);
-        final BigInteger light = handleMap(waterToLightMap, water);
+        final long light = handleMap(waterToLightMap, water);
         log("Light: " + light);
-        final BigInteger temperature = handleMap(lightToTemperatureMap, light);
+        final long temperature = handleMap(lightToTemperatureMap, light);
         log("Temperature: " + temperature);
-        final BigInteger humidity = handleMap(temperatureToHumidityMap, temperature);
+        final long humidity = handleMap(temperatureToHumidityMap, temperature);
         log("Humidity: " + humidity);
-        final BigInteger location = handleMap(humidityToLocationMap, humidity);
+        final long location = handleMap(humidityToLocationMap, humidity);
         log("Location: " + location);
         return location;
     }
 
-    private BigInteger analyseNumbersInRange(final Tuple tuple) {
-        final BigInteger start = tuple.getStart();
-        final BigInteger range = tuple.getRange();
+    private long analyseNumbersInRange(final Tuple tuple) {
+        final long step = 1000L;
+        final long start = tuple.getStart();
+        final long range = tuple.getRange();
+        final long end = start + range - 1;
 
-        final BigInteger step = BigInteger.valueOf(1000);
-        final BigInteger end = start.add(range).subtract(BigInteger.ONE);
+        long minimum = Long.MAX_VALUE;
+        Long previousLocation = null;
+        Long previousSeed = null;
 
-        BigInteger minimum = null;
-        BigInteger previousLocation = null;
-        BigInteger previousSeed = null;
-
-        for (BigInteger current = start; current.compareTo(end) <= 0; current = current.add(step)) {
-            final BigInteger location = analyzeSeed(current);
-
-            minimum = (minimum == null) ? location : minimum.min(location);
+        for (long current = start; current <= end; current += step) {
+            final long location = analyzeSeed(current);
+            minimum = Math.min(minimum, location);
 
             if (previousLocation != null && previousSeed != null) {
-                final BigInteger expectedDifference = current.subtract(previousSeed);
-                final BigInteger actualDifference = location.subtract(previousLocation);
-                if (!expectedDifference.equals(actualDifference)) {
+                final long expectedDifference = current - previousSeed;
+                final long actualDifference = location - previousLocation;
+                if (expectedDifference != actualDifference) {
                     log("Linearity assumption broken. Reanalyzing range: " + previousSeed + " to " + current);
-                    minimum = reanalyzeRange(previousSeed, current.subtract(BigInteger.ONE), minimum);
+                    minimum = reanalyzeRange(previousSeed, current - 1, minimum);
                     previousLocation = null;
                     previousSeed = null;
                     continue;
@@ -148,24 +128,23 @@ public class Day05 extends Day {
             previousLocation = location;
         }
 
-        // Final pass for any remaining seeds in the last range
-        if (start.add(range).subtract(BigInteger.ONE).compareTo(end) > 0) {
-            log("Final pass for remaining range: " + end.add(BigInteger.ONE) + " to " + start.add(range).subtract(BigInteger.ONE));
-            minimum = reanalyzeRange(end.add(BigInteger.ONE), start.add(range).subtract(BigInteger.ONE), minimum);
+        if (start + range - 1 > end) {
+            log("Final pass for remaining range: " + (end + 1) + " to " + (start + range - 1));
+            minimum = reanalyzeRange(end + 1, start + range - 1, minimum);
         }
 
         log("Minimum: " + minimum + " (Range: " + start + ", " + range + ")");
         return minimum;
     }
 
-    private BigInteger reanalyzeRange(
-            final BigInteger rangeStart,
-            final BigInteger rangeEnd,
-            BigInteger currentMinimum
+    private long reanalyzeRange(
+            final long rangeStart,
+            final long rangeEnd,
+            long currentMinimum
     ) {
-        for (BigInteger current = rangeStart; current.compareTo(rangeEnd) <= 0; current = current.add(BigInteger.ONE)) {
-            final BigInteger location = analyzeSeed(current);
-            currentMinimum = (currentMinimum == null) ? location : currentMinimum.min(location);
+        for (long current = rangeStart; current <= rangeEnd; current++) {
+            final long location = analyzeSeed(current);
+            currentMinimum = Math.min(currentMinimum, location);
         }
         return currentMinimum;
     }
@@ -183,9 +162,9 @@ public class Day05 extends Day {
 
             if (!line.contains("-to-")) {
                 final String[] values = line.split(" ");
-                final BigInteger destinationRangeStart = new BigInteger(values[0]);
-                final BigInteger sourceRangeStart = new BigInteger(values[1]);
-                final BigInteger range = new BigInteger(values[2]);
+                final long destinationRangeStart = Long.parseLong(values[0]);
+                final long sourceRangeStart = Long.parseLong(values[1]);
+                final long range = Long.parseLong(values[2]);
                 map.add(new MappingData(destinationRangeStart, sourceRangeStart, range));
             }
         }
@@ -193,41 +172,28 @@ public class Day05 extends Day {
     }
 
 
-    private BigInteger handleMap(
+    private long handleMap(
             final List<MappingData> map,
-            final BigInteger input
+            final long input
     ) {
-        for (final MappingData mappingData : map) {
-            final BigInteger sourceRangeStart = mappingData.sourceRangeStart();
-            final BigInteger range = mappingData.range();
-            final BigInteger sourceRangeEnd = sourceRangeStart.add(range);
-            if (input.compareTo(sourceRangeStart) >= 0 && input.compareTo(sourceRangeEnd) < 0) {
-                log("Input: " + input);
-                log("Source Range start: " + sourceRangeStart);
-                log("Source Range end: " + sourceRangeEnd);
-                log("Range: " + range);
-                return input.add(mappingData.destinationRangeStart().subtract(mappingData.sourceRangeStart()));
-            }
-        }
-
-        return input;
+        return map.stream()
+                .filter(mappingData -> input >= mappingData.sourceRangeStart()
+                        && input < mappingData.sourceRangeStart() + mappingData.range())
+                .mapToLong(mappingData -> input + (mappingData.destinationRangeStart() - mappingData.sourceRangeStart()))
+                .findFirst()
+                .orElse(input);
     }
 
-    public record MappingData(BigInteger destinationRangeStart, BigInteger sourceRangeStart, BigInteger range) {
+    public record MappingData(long destinationRangeStart, long sourceRangeStart, long range) {
 
     }
 
     @Data
     @AllArgsConstructor
-    public class Tuple {
+    public static class Tuple {
 
-        final BigInteger start;
-        final BigInteger range;
-
-        public String toString() {
-            return start.toString() + "-" + range.toString();
-        }
-
+        private final long start;
+        private final long range;
     }
 
 

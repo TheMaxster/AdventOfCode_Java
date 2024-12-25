@@ -21,7 +21,7 @@ public class Day24 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     public String part1(final List<String> input) {
