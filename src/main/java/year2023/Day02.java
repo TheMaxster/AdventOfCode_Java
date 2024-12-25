@@ -25,7 +25,7 @@ public class Day02 extends Day {
 
         // Map for saving id (key) and the game result map (value)
         final HashMap<Integer, Map<String, Integer>> resultMap = new HashMap<>();
-        input.stream().forEach(line -> processGame(line, resultMap));
+        input.stream().map(this::processGame).forEach(resultMap::putAll);
 
         log("ResultMap: " + resultMap);
 
@@ -39,7 +39,7 @@ public class Day02 extends Day {
 
         // Map for saving id (key) and the game result map (value)
         final HashMap<Integer, Map<String, Integer>> resultMap = new HashMap<>();
-        input.stream().forEach(line -> processGame(line, resultMap));
+        input.stream().map(this::processGame).forEach(resultMap::putAll);
 
         log("ResultMap: " + resultMap);
 
@@ -48,10 +48,9 @@ public class Day02 extends Day {
         return ListUtils.sumUpInt(productList).toString();
     }
 
-    public void processGame(
-            final String line,
-            final Map<Integer, Map<String, Integer>> resultMap
-    ) {
+    public Map<Integer, Map<String, Integer>> processGame(final String line) {
+        final Map<Integer, Map<String, Integer>> resultMap = new HashMap<>();
+
         // Split the line into id and the actual game results.
         final String[] parts = line.split(":");
         if (parts.length == 2) {
@@ -61,7 +60,7 @@ public class Day02 extends Day {
             // log("Game " + gameId + ": ");
 
             // Map to save the game results of each turn.
-            final Map<String, Integer> maxColorMapOfGame = new HashMap();
+            final Map<String, Integer> maxColorMapOfGame = new HashMap<>();
 
             final String[] games = parts[1].split(";");
             for (final String game : games) {
@@ -86,30 +85,9 @@ public class Day02 extends Day {
             // We should never get here.
             log("Invalid game data format: " + line);
         }
-    }
 
-    //    public static void main(final String[] args) {
-    //
-    //        final List<String> lines = ImportUtils.readAsList(FILE_PATH);
-    //
-    //        // Map for saving id (key) and the game result map (value)
-    //        final HashMap<Integer, Map<String, Integer>> resultMap = new HashMap<>();
-    //        lines.stream().forEach(line -> processGame(line, resultMap));
-    //
-    //        log("ResultMap: " + resultMap);
-    //
-    //        // Part 1:
-    //        final List<Integer> validIdNumberList = calculatePart1(resultMap);
-    //        log("ValidIdNumberList: " + validIdNumberList);
-    //        final int result = ListUtils.sumUpInt(validIdNumberList);
-    //        log("Solution Part 1: " + result);
-    //
-    //        // Part 2:
-    //        final List<Integer> productList = calculatePart2(resultMap);
-    //        log("ProductList: " + productList);
-    //        final int result2 = ListUtils.sumUpInt(productList);
-    //        log("Solution Part 2: " + result2);
-    //    }
+        return resultMap;
+    }
 
     public Map<String, Integer> processGameSection(final String section) {
         final String[] colors = section.trim().split(",");
@@ -177,10 +155,6 @@ public class Day02 extends Day {
 
         BallConfiguration(final int maxAmount) {
             this.maxAmount = maxAmount;
-        }
-
-        public int getMaxAmount() {
-            return maxAmount;
         }
     }
 
