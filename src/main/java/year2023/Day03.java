@@ -118,10 +118,9 @@ public class Day03 extends Day {
             final int indexEnd,
             final int line
     ) {
-        final List<String> numbers = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         final String leftChar = ArrayUtils.isWithinBounds(array, line, indexStart - 1) ? array[line][indexStart - 1] : "$";
         final String rightChar = ArrayUtils.isWithinBounds(array, line, indexEnd + 1) ? array[line][indexEnd + 1] : "$";
-        return numbers.contains(leftChar) || numbers.contains(rightChar);
+        return VALID_NUMBERS.contains(leftChar) || VALID_NUMBERS.contains(rightChar);
     }
 
     private static boolean checkSurrounding(
