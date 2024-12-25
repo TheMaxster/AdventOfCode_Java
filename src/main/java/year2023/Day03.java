@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import application.Day;
+import utils.ArrayUtils;
 import utils.ImportUtils;
 import utils.ListUtils;
 
@@ -117,28 +118,10 @@ public class Day03 extends Day {
             final int indexEnd,
             final int line
     ) {
-
-        // Check character to the left via parsing.
-        try {
-            final String charToAnalyze = array[line][indexStart - 1];
-            final Integer leftNumber = Integer.parseInt(charToAnalyze);
-            return true;
-
-        } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            //...
-        }
-
-        // Check character to the right via parsing.
-        try {
-            final String charToAnalyze = array[line][indexEnd + 1];
-            final Integer rightNumber = Integer.parseInt(charToAnalyze);
-            return true;
-
-        } catch (final NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            //...
-        }
-
-        return false;
+        final List<String> numbers = List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        final String leftChar = ArrayUtils.isWithinBounds(array, line, indexStart - 1) ? array[line][indexStart - 1] : "$";
+        final String rightChar = ArrayUtils.isWithinBounds(array, line, indexEnd + 1) ? array[line][indexEnd + 1] : "$";
+        return numbers.contains(leftChar) || numbers.contains(rightChar);
     }
 
     private static boolean checkSurrounding(
