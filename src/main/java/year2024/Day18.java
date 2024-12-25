@@ -12,7 +12,7 @@ import utils.Coordinate;
 import utils.ImportUtils;
 
 /**
- * See https://adventofcode.com/2024/day/1
+ * See https://adventofcode.com/2024/day/18
  */
 public class Day18 extends Day {
 
@@ -40,7 +40,8 @@ public class Day18 extends Day {
 
         final String[][] map = createMap(widthToUse, heightToUse, bytesToFall, bytes);
 
-        final int steps = ArrayUtils.findShortestPath(map, start, end).size();
+        // findShortestPath returns all coordinates so we have to substract 1.
+        final int steps = ArrayUtils.findShortestPath(map, start, end).size() - 1;
 
         return String.valueOf(steps);
     }
@@ -66,7 +67,8 @@ public class Day18 extends Day {
         for (int i = 1; i < bytes.size(); i++) {
             final String[][] map = createMap(widthToUse, heightToUse, i, bytes);
 
-            final int steps = ArrayUtils.findShortestPath(map, start, end).size();
+            // findShortestPath returns all coordinates so we have to substract 1.
+            final int steps = ArrayUtils.findShortestPath(map, start, end).size() - 1;
             if (steps == -1) {
                 result = bytes.get(i - 1);
                 break;

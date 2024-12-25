@@ -31,7 +31,8 @@ import year2023.Day20;
 import year2023.Day21;
 import year2023.Day22;
 import year2024.Day23;
-import year2024.Day24;
+import year2024.Day24_Reddit;
+import year2024.Day25;
 
 public class Application {
 
@@ -88,7 +89,9 @@ public class Application {
         DAYS2024.put(21, new year2024.Day21());
         DAYS2024.put(22, new year2024.Day22());
         DAYS2024.put(23, new Day23());
-        DAYS2024.put(24, new Day24());
+        // DAYS2024.put(24, new Day24());
+        DAYS2024.put(24, new Day24_Reddit());
+        DAYS2024.put(25, new Day25());
 
         YEARS = new HashMap<>();
         YEARS.put(2023, DAYS2023);
