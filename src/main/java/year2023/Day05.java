@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import application.Day;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import utils.ImportUtils;
 
@@ -25,24 +26,17 @@ public class Day05 extends Day {
 
     @Override
     public Boolean getLoggingEnabled() {
-        return true;
+        return false;
     }
 
     @Override
     public String part1(final List<String> input) {
-        // Testausgabe
-        //        log("Print maps for testing only:");
-        //        printMap(seedToSoilMap);
-        //        printMap(soilToFertilizerMap);
-        // Repeat for other maps...
-
         final List<BigInteger> seedValues = getSeedValues(input);
         final List<BigInteger> locations = new ArrayList<>();
 
         for (final BigInteger seed : seedValues) {
             final BigInteger location = analyzeSeed(seed);
             locations.add(location);
-            //   log("---------------");
         }
 
         final BigInteger minValue = locations.stream()
@@ -54,8 +48,6 @@ public class Day05 extends Day {
 
     @Override
     public String part2(final List<String> input) {
-        final BigInteger minimum = null;
-
         final List<BigInteger> seedValues = getSeedValues(input);
         final List<Tuple> tupleList = new ArrayList<>();
 
@@ -104,53 +96,78 @@ public class Day05 extends Day {
         return seedValues;
     }
 
-    private static BigInteger analyzeSeed(
+    private BigInteger analyzeSeed(
             final BigInteger seed
     ) {
-        //        log("Seed: " + seed);
         final BigInteger soil = handleMap(seedToSoilMap, seed);
-        //        log("Soil: " + soil);
+        log("Soil: " + soil);
         final BigInteger fertilizer = handleMap(soilToFertilizerMap, soil);
-        //        log("Fertilizer: " + fertilizer);
+        log("Fertilizer: " + fertilizer);
         final BigInteger water = handleMap(fertilizerToWaterMap, fertilizer);
-        //        log("Water: " + water);
+        log("Water: " + water);
         final BigInteger light = handleMap(waterToLightMap, water);
-        //        log("Light: " + light);
+        log("Light: " + light);
         final BigInteger temperature = handleMap(lightToTemperatureMap, light);
-        //        log("Temperature: " + temperature);
+        log("Temperature: " + temperature);
         final BigInteger humidity = handleMap(temperatureToHumidityMap, temperature);
-        //        log("Humidity: " + humidity);
+        log("Humidity: " + humidity);
         final BigInteger location = handleMap(humidityToLocationMap, humidity);
-        //        log("Location: " + location);
+        log("Location: " + location);
         return location;
     }
-
 
     private BigInteger analyseNumbersInRange(final Tuple tuple) {
         final BigInteger start = tuple.getStart();
         final BigInteger range = tuple.getRange();
 
-        BigInteger current = start;
+        final BigInteger step = BigInteger.valueOf(1000);
         final BigInteger end = start.add(range).subtract(BigInteger.ONE);
 
         BigInteger minimum = null;
+        BigInteger previousLocation = null;
+        BigInteger previousSeed = null;
 
-        while (current.compareTo(end) <= 0) {
-
+        for (BigInteger current = start; current.compareTo(end) <= 0; current = current.add(step)) {
             final BigInteger location = analyzeSeed(current);
 
-            if (minimum == null) {
-                minimum = location;
-            } else {
-                minimum = minimum.min(location);
+            minimum = (minimum == null) ? location : minimum.min(location);
+
+            if (previousLocation != null && previousSeed != null) {
+                final BigInteger expectedDifference = current.subtract(previousSeed);
+                final BigInteger actualDifference = location.subtract(previousLocation);
+                if (!expectedDifference.equals(actualDifference)) {
+                    log("Linearity assumption broken. Reanalyzing range: " + previousSeed + " to " + current);
+                    minimum = reanalyzeRange(previousSeed, current.subtract(BigInteger.ONE), minimum);
+                    previousLocation = null;
+                    previousSeed = null;
+                    continue;
+                }
             }
 
-            current = current.add(BigInteger.ONE);
+            previousSeed = current;
+            previousLocation = location;
+        }
+
+        // Final pass for any remaining seeds in the last range
+        if (start.add(range).subtract(BigInteger.ONE).compareTo(end) > 0) {
+            log("Final pass for remaining range: " + end.add(BigInteger.ONE) + " to " + start.add(range).subtract(BigInteger.ONE));
+            minimum = reanalyzeRange(end.add(BigInteger.ONE), start.add(range).subtract(BigInteger.ONE), minimum);
         }
 
         log("Minimum: " + minimum + " (Range: " + start + ", " + range + ")");
         return minimum;
+    }
 
+    private BigInteger reanalyzeRange(
+            final BigInteger rangeStart,
+            final BigInteger rangeEnd,
+            BigInteger currentMinimum
+    ) {
+        for (BigInteger current = rangeStart; current.compareTo(rangeEnd) <= 0; current = current.add(BigInteger.ONE)) {
+            final BigInteger location = analyzeSeed(current);
+            currentMinimum = (currentMinimum == null) ? location : currentMinimum.min(location);
+        }
+        return currentMinimum;
     }
 
     private static List<MappingData> parseMap(final Scanner scanner) {
@@ -176,7 +193,7 @@ public class Day05 extends Day {
     }
 
 
-    private static BigInteger handleMap(
+    private BigInteger handleMap(
             final List<MappingData> map,
             final BigInteger input
     ) {
@@ -185,10 +202,10 @@ public class Day05 extends Day {
             final BigInteger range = mappingData.range();
             final BigInteger sourceRangeEnd = sourceRangeStart.add(range);
             if (input.compareTo(sourceRangeStart) >= 0 && input.compareTo(sourceRangeEnd) < 0) {
-                //                log("Input: "+input);
-                //                log("Source Range start: "+sourceRangeStart);
-                //                log("Source Range end: "+sourceRangeEnd);
-                //                log("Range: "+range);
+                log("Input: " + input);
+                log("Source Range start: " + sourceRangeStart);
+                log("Source Range end: " + sourceRangeEnd);
+                log("Range: " + range);
                 return input.add(mappingData.destinationRangeStart().subtract(mappingData.sourceRangeStart()));
             }
         }
@@ -196,19 +213,12 @@ public class Day05 extends Day {
         return input;
     }
 
-    private void printMap(final List<MappingData> map) {
-        for (final MappingData data : map) {
-            log("Destination Range Start: " + data.destinationRangeStart +
-                    ", Source Range Start: " + data.sourceRangeStart +
-                    ", Range: " + data.range);
-        }
-    }
-
     public record MappingData(BigInteger destinationRangeStart, BigInteger sourceRangeStart, BigInteger range) {
 
     }
 
     @Data
+    @AllArgsConstructor
     public class Tuple {
 
         final BigInteger start;
